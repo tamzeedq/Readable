@@ -154,7 +154,7 @@ function App() {
   return (
     <div className={`app ${darkMode ? "dark" : "light"}`}>
       <header className="app-header">
-        <h1>Readible</h1>
+        <h1>Readable</h1>
         <div className="header-controls">
           <button
             className="icon-button"
