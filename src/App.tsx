@@ -7,6 +7,9 @@ import FocusReader from "./components/FocusReader";
 import PlaybackControls from "./components/PlaybackControls";
 import ImageBlockViewer from "./components/ImageBlockViewer";
 import SettingsPanel from "./components/SettingsPanel";
+import AuthPage from "./pages/AuthPage";
+import BookLibrary from "./pages/BookLibrary";
+import { auth } from "./lib/supabase";
 import { ContentBlock, TextToken } from "./types";
 import "./App.css";
 
@@ -17,7 +20,14 @@ function App() {
     addBook,
     setCurrentBook,
     darkMode,
+    books,
+    currentBook,
+    setUser,
+    isAuthenticated,
   } = useAppStore();
+
+  const [appState, setAppState] = useState<'auth' | 'library' | 'reading'>('auth');
+  const [showLibrary, setShowLibrary] = useState(false);
 
   const [tokens, setTokens] = useState<TextToken[]>([]);
   const [blocks, setBlocks] = useState<ContentBlock[]>([]);
@@ -30,6 +40,26 @@ function App() {
   const [currentBlock, setCurrentBlock] = useState<ContentBlock | null>(null);
   const [showImageViewer, setShowImageViewer] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+
+  // Check authentication status on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const session = await auth.getSession();
+        if (session?.user) {
+          setUser(session.user as any);
+          setAppState('library');
+        } else {
+          setAppState('auth');
+        }
+      } catch (err) {
+        console.error('Auth check failed:', err);
+        setAppState('auth');
+      }
+    };
+
+    checkAuth();
+  }, [setUser]);
 
   // Initialize engine when tokens/blocks change
   useEffect(() => {
@@ -151,11 +181,82 @@ function App() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [engine, isPlaying, currentTokenIndex, tokens.length, playbackSettings.wordsPerMinute, showSettings]);
 
+  const handleAuthSuccess = async () => {
+    try {
+      const session = await auth.getSession();
+      if (session?.user) {
+        setUser(session.user as any);
+      }
+    } catch (err) {
+      console.error('Failed to get session:', err);
+    }
+    setAppState('library');
+  };
+
+  const handleLogOut = async () => {
+    try {
+      await auth.signOut();
+      setUser(null);
+      setAppState('auth');
+      setCurrentBook(null);
+      setTokens([]);
+      setBlocks([]);
+    } catch (err) {
+      console.error('Logout failed:', err);
+    }
+  };
+
+  // If showing library, return library view
+  if (appState === 'library' || showLibrary) {
+    return (
+      <div className={`app ${darkMode ? "dark" : "light"}`}>
+        <BookLibrary
+          books={books}
+          currentBook={currentBook}
+          onSelectBook={(book) => {
+            setCurrentBook(book);
+            setShowLibrary(false);
+            setAppState('reading');
+            // Reset reading state for new book
+            setTokens([]);
+            setBlocks([]);
+            setCurrentTokenIndex(0);
+            setIsPlaying(false);
+          }}
+          onAddBook={() => {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = '.epub,.pdf,.txt';
+            fileInput.onchange = (e) => {
+              handleFileUpload(e as any);
+              setShowLibrary(false);
+            };
+            fileInput.click();
+          }}
+          onLogOut={handleLogOut}
+          isAuthenticated={isAuthenticated}
+        />
+      </div>
+    );
+  }
+
+  // If not authenticated, show auth page
+  if (appState === 'auth') {
+    return <AuthPage onAuthSuccess={handleAuthSuccess} />;
+  }
+
   return (
     <div className={`app ${darkMode ? "dark" : "light"}`}>
       <header className="app-header">
         <h1>Readable</h1>
         <div className="header-controls">
+          <button
+            className="icon-button"
+            onClick={() => setShowLibrary(true)}
+            title="My Books"
+          >
+            📚
+          </button>
           <button
             className="icon-button"
             onClick={() => setShowSettings(!showSettings)}
