@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><meta name="design_doc_mode" content="canvas"><style>body{margin:0;background:#efede8;font-family:system-ui,sans-serif}a{color:#1a1a1a}a:hover{color:#2a78d6}</style></helmet>
+<sc-for list="{{ designs }}" as="d" hint-placeholder-count="2">
+<section id="{{ d.id }}" style="padding:40px 44px 48px;border-bottom:1px solid rgba(0,0,0,.08);display:flex;flex-direction:column;gap:28px;">
+<div style="display:flex;align-items:baseline;gap:10px;"><a href="#{{ d.id }}" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:5px;text-decoration:none;">{{ d.id }}</a><span style="font:600 15px/1.2 system-ui,sans-serif;color:#1a1a1a;">{{ d.name }}</span><span style="font:13px system-ui,sans-serif;color:rgba(0,0,0,.55);">{{ d.note }}</span></div>
+<sc-if value="{{ d.mobile }}">
+<div style="display:grid;grid-template-columns:repeat(4,812px);gap:48px 40px;">
+<sc-for list="{{ d.screens }}" as="s" hint-placeholder-count="12">
+<div style="display:flex;flex-direction:column;gap:10px;">
+<div style="font:13px system-ui,sans-serif;color:rgba(0,0,0,.65);display:flex;gap:8px;align-items:baseline;"><span style="font:600 10.5px ui-monospace,Menlo,monospace;padding:2px 6px;background:rgba(0,0,0,.08);border-radius:4px;">{{ s.n }}</span>{{ s.label }}</div>
+<div style="display:grid;grid-template-columns:390px 390px;gap:32px;">
+<div style="width:390px;height:844px;border-radius:48px;overflow:hidden;box-shadow:0 0 0 10px #1a1a1a, 0 20px 40px rgba(0,0,0,.18);"><dc-import name="Readable Paper Mobile" palette="{{ d.palette }}" screen="{{ s.screen }}" overlay="{{ s.overlay }}" theme="light" hint-size="390px,844px"></dc-import></div>
+<div style="width:390px;height:844px;border-radius:48px;overflow:hidden;box-shadow:0 0 0 10px #1a1a1a, 0 20px 40px rgba(0,0,0,.18);"><dc-import name="Readable Paper Mobile" palette="{{ d.palette }}" screen="{{ s.screen }}" overlay="{{ s.overlay }}" theme="dark" hint-size="390px,844px"></dc-import></div>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{ d.desktop }}">
+<div style="display:grid;grid-template-columns:repeat(2,2584px);gap:40px 48px;">
+<sc-for list="{{ d.screens }}" as="s" hint-placeholder-count="12">
+<div style="display:flex;flex-direction:column;gap:10px;">
+<div style="font:13px system-ui,sans-serif;color:rgba(0,0,0,.65);display:flex;gap:8px;align-items:baseline;"><span style="font:600 10.5px ui-monospace,Menlo,monospace;padding:2px 6px;background:rgba(0,0,0,.08);border-radius:4px;">{{ s.n }}</span>{{ s.label }}</div>
+<div style="display:grid;grid-template-columns:1280px 1280px;gap:24px;">
+<div style="background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden;"><dc-import name="Readable Paper" palette="{{ d.palette }}" screen="{{ s.screen }}" overlay="{{ s.overlay }}" theme="light" hint-size="1280px,800px"></dc-import></div>
+<div style="background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden;"><dc-import name="Readable Paper" palette="{{ d.palette }}" screen="{{ s.screen }}" overlay="{{ s.overlay }}" theme="dark" hint-size="1280px,800px"></dc-import></div>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+</section>
+</sc-for>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const screens = [
+      ['home', 'none', 'Home'], ['library', 'none', 'Library (card hover)'], ['collections', 'none', 'Collections'],
+      ['stats', 'none', 'Stats'], ['settings', 'none', 'Settings · Reading'], ['home', 'search', 'Search (⌘K)'],
+      ['home', 'import', 'Add books · files'], ['home', 'paste', 'Add books · paste text'], ['library', 'details', 'Book details drawer'],
+      ['reader', 'none', 'Reader · paused with context'], ['reader', 'appearance', 'Reader · appearance'], ['reader', 'image', 'Reader · paused at image']
+    ].map(([screen, overlay, label], i) => ({ screen, overlay, label, n: String(i + 1).padStart(2, '0') }));
+    const mob = screens.map(s => ({ ...s, label: s.label.replace(' (⌘K)', '').replace(' (card hover)', '').replace('Book details drawer', 'Book details sheet') }));
+    return { designs: [
+      { id: '3a', palette: 'sepia', name: 'Paper · Sepia · Mobile', note: 'iPhone 390 × 844, bottom tabs, sheets', screens: mob, mobile: true },
+      { id: '3b', palette: 'moss', name: 'Paper · Moss · Mobile', note: 'iPhone 390 × 844, bottom tabs, sheets', screens: mob, mobile: true },
+      { id: '1a', palette: 'sepia', name: 'Paper · Sepia', note: 'Cream paper, rust accent and focal letter', screens, desktop: true },
+      { id: '2a', palette: 'moss', name: 'Paper · Moss', note: 'Green parchment, deep moss accent, sage in dark', screens, desktop: true }
+    ] };
+  }
+}
+</script>
+</body>
+</html>

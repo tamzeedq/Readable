@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Literata:opsz,wght@7..72,400;7..72,500;7..72,700&display=swap"><style>a{color:inherit}a:hover{opacity:.8}</style></helmet>
+<div style="{{ root }}" tabIndex="0" onKeyDown="{{ onKey }}" onMouseMove="{{ onMove }}">
+<div aria-hidden="true" style="height:47px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 30px 0 34px;font:600 16px system-ui,-apple-system,sans-serif;opacity:{{ chrome }};transition:opacity .5s;"><span>9:41</span><span style="display:flex;align-items:center;gap:6px;"><svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"></rect><rect x="5" y="5.5" width="3" height="6.5" rx="1"></rect><rect x="10" y="3" width="3" height="9" rx="1"></rect><rect x="15" y="0" width="3" height="12" rx="1"></rect></svg><svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 2.6c2.3 0 4.4.9 6 2.4l1.3-1.3A10.4 10.4 0 0 0 8 .7 10.4 10.4 0 0 0 .7 3.7L2 5a8.6 8.6 0 0 1 6-2.4Zm0 3.7c1.3 0 2.5.5 3.4 1.3l1.3-1.3A6.6 6.6 0 0 0 8 4.4c-1.8 0-3.4.7-4.7 1.9l1.3 1.3c.9-.8 2.1-1.3 3.4-1.3Zm0 3.6c-.5 0-1 .2-1.4.6L8 12l1.4-1.5c-.4-.4-.9-.6-1.4-.6Z"></path></svg><svg width="26" height="12" viewBox="0 0 26 12" fill="none"><rect x="0.5" y="0.5" width="22" height="11" rx="3" stroke="currentColor" opacity=".4"></rect><rect x="2" y="2" width="17" height="8" rx="1.8" fill="currentColor"></rect><path d="M24 4v4c.8-.3 1.3-1.1 1.3-2S24.8 4.3 24 4Z" fill="currentColor" opacity=".45"></path></svg></span></div>
+
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+<main style="flex:1;min-height:0;overflow-y:auto;padding:10px 20px 24px;display:flex;flex-direction:column;gap:24px;">
+<header style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+<div><div style="font-size:15px;font-style:italic;color:var(--muted);">Friday, 9 October</div><h1 style="margin:2px 0 0;font-family:var(--display);font-weight:500;font-size:32px;letter-spacing:-0.015em;line-height:1.1;">Good evening</h1></div>
+<button onClick="{{ openSearch }}" aria-label="Search" style="width:44px;height:44px;flex:none;border-radius:22px;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;cursor:pointer;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg></button>
+</header>
+<section aria-label="Continue reading" style="display:flex;flex-direction:column;gap:16px;padding:18px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);">
+<div style="display:grid;grid-template-columns:92px minmax(0,1fr);gap:16px;align-items:center;">
+<div style="position:relative;width:92px;height:138px;border-radius:2px 5px 5px 2px;overflow:hidden;background:var(--hero-cover);color:#f6efe2;box-shadow:var(--book-shadow);"><div style="position:absolute;inset:6px;border:1px solid rgba(246,239,226,.45);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:14px 4px 8px;text-align:center;"><span style="font-family:var(--display);font-size:14px;font-weight:500;line-height:1.1;">Middlemarch</span><span style="font-size:7px;letter-spacing:.14em;text-transform:uppercase;">George Eliot</span></div><div style="position:absolute;left:0;top:0;bottom:0;width:8px;background:linear-gradient(90deg,rgba(0,0,0,.26),transparent);"></div></div>
+<div style="display:flex;flex-direction:column;gap:4px;min-width:0;">
+<div style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-text);">Continue reading</div>
+<h2 style="margin:0;font-family:var(--display);font-weight:500;font-size:28px;letter-spacing:-0.015em;line-height:1.05;">Middlemarch</h2>
+<div style="font-size:16px;font-style:italic;color:var(--muted);">George Eliot</div>
+<div style="margin-top:6px;font-size:15px;">Chapter 38</div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;"><div style="display:flex;justify-content:space-between;font-size:14px;"><span>38% read</span><span style="font-style:italic;color:var(--muted);">10 h 12 m left · 320 wpm</span></div><div style="height:4px;border-radius:2px;background:var(--line-strong);"><div style="width:38%;height:100%;border-radius:2px;background:var(--accent);"></div></div></div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;">
+<button onClick="{{ openReader }}" style="display:flex;align-items:center;justify-content:center;gap:8px;height:50px;border-radius:10px;border:0;background:var(--accent);color:var(--on-accent);font-family:var(--ui);font-size:17px;font-weight:500;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"></path></svg>Resume</button>
+<button onClick="{{ openDetails }}" style="height:50px;padding:0 18px;border-radius:10px;border:1px solid var(--line-strong);background:transparent;color:var(--ink);font-family:var(--ui);font-size:16px;cursor:pointer;">Details</button>
+</div>
+</section>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+<button onClick="{{ openImport }}" style="display:flex;align-items:center;justify-content:center;gap:8px;height:48px;border-radius:10px;border:1px solid var(--line-strong);background:transparent;color:var(--ink);font-family:var(--ui);font-size:16px;cursor:pointer;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add books</button>
+<button onClick="{{ openPaste }}" style="display:flex;align-items:center;justify-content:center;gap:8px;height:48px;border-radius:10px;border:1px solid var(--line-strong);background:transparent;color:var(--ink);font-family:var(--ui);font-size:16px;cursor:pointer;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="4" width="12" height="17" rx="2"></rect><path d="M9 4V3h6v1"></path></svg>Paste text</button>
+</div>
+<section aria-label="Recently read" style="display:flex;flex-direction:column;gap:14px;">
+<div style="display:flex;align-items:baseline;justify-content:space-between;"><h2 style="margin:0;font-family:var(--display);font-weight:500;font-style:italic;font-size:22px;">Recently read</h2><a href="#" onClick="{{ goLibrary }}" style="font-size:15px;color:var(--muted);">See all</a></div>
+<div style="display:flex;gap:14px;overflow-x:auto;margin:0 -20px;padding:0 20px 4px;">
+<sc-for list="{{ recent }}" as="b" hint-placeholder-count="5">
+<div style="width:100px;flex:none;display:flex;flex-direction:column;gap:8px;">
+<div style="position:relative;aspect-ratio:2/3;border-radius:2px 5px 5px 2px;overflow:hidden;background:{{ b.coverBg }};color:#f6efe2;box-shadow:var(--book-shadow);">
+<sc-if value="{{ b.art }}"><div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,var(--stripe) 0 6px,transparent 6px 12px);display:grid;place-items:center;color:var(--muted);font:10px ui-monospace,Menlo,monospace;">cover art</div></sc-if>
+<sc-if value="{{ b.noArt }}"><div style="position:absolute;inset:6px;border:1px solid rgba(246,239,226,.42);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:12px 4px 7px;text-align:center;"><span style="font-family:var(--display);font-size:14px;font-weight:500;line-height:1.15;">{{ b.t }}</span><span style="font-size:7px;letter-spacing:.14em;text-transform:uppercase;">{{ b.a }}</span></div></sc-if>
+<div style="position:absolute;left:0;top:0;bottom:0;width:7px;background:linear-gradient(90deg,rgba(0,0,0,.26),transparent);"></div>
+</div>
+<div style="font-family:var(--display);font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ b.t }}</div>
+<div style="display:flex;align-items:center;gap:6px;margin-top:-4px;"><div style="flex:1;height:3px;border-radius:2px;background:var(--line-strong);"><div style="width:{{ b.pct }};height:100%;border-radius:2px;background:var(--accent);"></div></div><span style="font-size:11px;color:var(--muted);">{{ b.status }}</span></div>
+</div>
+</sc-for>
+</div>
+</section>
+</main>
+</sc-if>
+
+<sc-if value="{{ isLibrary }}">
+<main style="flex:1;min-height:0;overflow-y:auto;padding:10px 20px 24px;display:flex;flex-direction:column;gap:18px;">
+<header style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+<div style="display:flex;align-items:baseline;gap:10px;"><h1 style="margin:0;font-family:var(--display);font-weight:500;font-size:32px;letter-spacing:-0.015em;">Library</h1><span style="font-size:15px;font-style:italic;color:var(--muted);">{{ countLabel }}</span></div>
+<div style="display:flex;gap:8px;">
+<button onClick="{{ openSearch }}" aria-label="Search" style="width:44px;height:44px;border-radius:22px;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;cursor:pointer;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg></button>
+<button onClick="{{ openImport }}" aria-label="Add books" style="width:44px;height:44px;border-radius:22px;border:0;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;cursor:pointer;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+</div>
+</header>
+<div role="radiogroup" aria-label="Status" style="display:flex;gap:8px;overflow-x:auto;margin:0 -20px;padding:0 20px;">
+<sc-for list="{{ statusChips }}" as="c" hint-placeholder-count="4"><button role="radio" aria-checked="{{ c.on }}" onClick="{{ c.pick }}" style="flex:none;height:38px;padding:0 15px;border-radius:19px;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};font-family:var(--ui);font-size:15px;white-space:nowrap;cursor:pointer;">{{ c.label }}</button></sc-for>
+<button style="flex:none;display:flex;align-items:center;gap:5px;height:38px;padding:0 13px;border-radius:19px;border:1px solid var(--line-strong);background:transparent;color:var(--ink);font-family:var(--ui);font-size:15px;cursor:pointer;">Shelf<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 14px;">
+<sc-for list="{{ books }}" as="b" hint-placeholder-count="9">
+<a href="#" onClick="{{ openDetails }}" style="display:flex;flex-direction:column;gap:7px;min-width:0;text-decoration:none;color:var(--ink);">
+<div style="position:relative;aspect-ratio:2/3;border-radius:2px 5px 5px 2px;overflow:hidden;background:{{ b.coverBg }};color:#f6efe2;box-shadow:var(--book-shadow);">
+<sc-if value="{{ b.art }}"><div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,var(--stripe) 0 6px,transparent 6px 12px);display:grid;place-items:center;color:var(--muted);font:10px ui-monospace,Menlo,monospace;">cover art</div></sc-if>
+<sc-if value="{{ b.noArt }}"><div style="position:absolute;inset:6px;border:1px solid rgba(246,239,226,.42);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:12px 4px 7px;text-align:center;"><span style="font-family:var(--display);font-size:14px;font-weight:500;line-height:1.15;">{{ b.t }}</span><span style="font-size:7px;letter-spacing:.14em;text-transform:uppercase;">{{ b.a }}</span></div></sc-if>
+<div style="position:absolute;left:0;top:0;bottom:0;width:7px;background:linear-gradient(90deg,rgba(0,0,0,.26),transparent);"></div>
+</div>
+<div style="font-family:var(--display);font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ b.t }}</div>
+<div style="display:flex;align-items:center;gap:6px;margin-top:-3px;"><div style="flex:1;height:3px;border-radius:2px;background:var(--line-strong);"><div style="width:{{ b.pct }};height:100%;border-radius:2px;background:var(--accent);"></div></div><span style="font-size:11px;color:var(--muted);">{{ b.status }}</span></div>
+</a>
+</sc-for>
+</div>
+</main>
+</sc-if>
+
+<sc-if value="{{ isCollections }}">
+<main style="flex:1;min-height:0;overflow-y:auto;padding:10px 20px 24px;display:flex;flex-direction:column;gap:22px;">
+<header style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+<h1 style="margin:0;font-family:var(--display);font-weight:500;font-size:32px;letter-spacing:-0.015em;">Collections</h1>
+<button aria-label="New shelf" style="width:44px;height:44px;border-radius:22px;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;cursor:pointer;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+</header>
+<section aria-label="Shelves" style="display:flex;flex-direction:column;gap:14px;">
+<sc-for list="{{ shelves }}" as="s" hint-placeholder-count="3">
+<a href="#" onClick="{{ goLibrary }}" style="display:flex;flex-direction:column;gap:14px;padding:18px 18px 16px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);text-decoration:none;color:var(--ink);">
+<div style="display:flex;align-items:flex-end;gap:3px;height:104px;padding:0 8px;border-bottom:4px solid {{ s.color }};overflow:hidden;">
+<sc-for list="{{ s.covers }}" as="c" hint-placeholder-count="5"><div style="width:{{ c.w }}px;height:{{ c.h }}px;flex:none;border-radius:2px 2px 0 0;background:{{ c.bg }};box-shadow:inset -3px 0 0 rgba(0,0,0,.12), inset 2px 0 0 rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;overflow:hidden;"><span style="writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--display);font-size:11px;color:#f6efe2;white-space:nowrap;">{{ c.t }}</span></div></sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:2px;"><div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;"><h2 style="margin:0;font-family:var(--display);font-weight:500;font-size:22px;">{{ s.name }}</h2><span style="font-size:14px;color:var(--muted);">{{ s.count }} books</span></div><div style="font-size:14px;font-style:italic;color:var(--muted);">{{ s.note }}</div></div>
+</a>
+</sc-for>
+</section>
+<section aria-label="Smart lists" style="display:flex;flex-direction:column;gap:10px;">
+<h2 style="margin:0;font-family:var(--display);font-weight:500;font-style:italic;font-size:22px;">Smart lists</h2>
+<div style="display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:14px;">
+<sc-for list="{{ smart }}" as="m" hint-placeholder-count="3">
+<a href="#" onClick="{{ goLibrary }}" style="display:grid;grid-template-columns:minmax(0,1fr) auto 18px;align-items:center;gap:12px;min-height:60px;padding:8px 16px;border-top:1px solid {{ m.bt }};text-decoration:none;color:var(--ink);"><span style="display:flex;flex-direction:column;"><span style="font-size:17px;">{{ m.name }}</span><span style="font-size:14px;font-style:italic;color:var(--muted);">{{ m.note }}</span></span><span style="font-size:15px;color:var(--muted);">{{ m.n }}</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true" style="color:var(--muted);"><path d="m9 18 6-6-6-6"></path></svg></a>
+</sc-for>
+</div>
+</section>
+</main>
+</sc-if>
+
+<sc-if value="{{ isStats }}">
+<main style="flex:1;min-height:0;overflow-y:auto;padding:10px 20px 24px;display:flex;flex-direction:column;gap:18px;">
+<header style="display:flex;align-items:baseline;gap:10px;"><h1 style="margin:0;font-family:var(--display);font-weight:500;font-size:32px;letter-spacing:-0.015em;">Stats</h1><span style="font-size:15px;font-style:italic;color:var(--muted);">3 – 9 October</span></header>
+<div role="radiogroup" aria-label="Range" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding:3px;border-radius:10px;background:var(--chip);">
+<sc-for list="{{ rangeSeg }}" as="o" hint-placeholder-count="4"><button role="radio" onClick="{{ o.pick }}" style="height:36px;border:0;border-radius:8px;background:{{ o.bg }};box-shadow:{{ o.sh }};color:var(--ink);font-family:var(--ui);font-size:15px;white-space:nowrap;cursor:pointer;">{{ o.label }}</button></sc-for>
+</div>
+<section aria-label="This week" style="display:grid;grid-template-columns:1fr 1fr;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);">
+<div style="grid-column:1 / -1;padding:18px 18px 16px;display:flex;flex-direction:column;gap:4px;border-bottom:1px solid var(--line);"><span style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);">Time reading</span><span style="font-family:var(--display);font-size:40px;font-weight:500;line-height:1;letter-spacing:-0.01em;">4 h 39 m</span><span style="font-size:14px;font-style:italic;color:var(--muted);">83 min more than last week</span></div>
+<div style="padding:16px 18px;display:flex;flex-direction:column;gap:4px;"><span style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);">Words read</span><span style="font-family:var(--display);font-size:28px;font-weight:500;line-height:1;">88,700</span><span style="font-size:13px;font-style:italic;color:var(--muted);">A third of Middlemarch</span></div>
+<div style="padding:16px 18px;display:flex;flex-direction:column;gap:4px;border-left:1px solid var(--line);"><span style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);">Avg speed</span><span style="font-family:var(--display);font-size:28px;font-weight:500;line-height:1;">318 <span style="font-size:16px;font-style:italic;color:var(--muted);">wpm</span></span><span style="font-size:13px;font-style:italic;color:var(--muted);">Up from 296</span></div>
+</section>
+<section aria-label="Minutes per day" style="display:flex;flex-direction:column;gap:14px;padding:18px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);">
+<div style="display:flex;align-items:baseline;justify-content:space-between;"><h2 style="margin:0;font-family:var(--display);font-weight:500;font-style:italic;font-size:20px;">Minutes per day</h2><span style="font-size:14px;color:var(--accent-text);">11-day streak</span></div>
+<div style="height:150px;display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:5px;align-items:end;border-bottom:1px solid var(--line-strong);">
+<sc-for list="{{ days }}" as="d" hint-placeholder-count="14"><div style="display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;height:100%;"><span style="font-size:11px;color:var(--muted);">{{ d.m }}</span><div style="width:100%;height:{{ d.h }};min-height:2px;border-radius:3px 3px 0 0;background:{{ d.bg }};"></div></div></sc-for>
+</div>
+<div style="display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:5px;margin-top:-8px;"><sc-for list="{{ days }}" as="d" hint-placeholder-count="14"><span style="text-align:center;font-size:11px;color:var(--muted);">{{ d.l }}</span></sc-for></div>
+</section>
+<section aria-label="By book" style="display:flex;flex-direction:column;gap:14px;padding:18px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);">
+<h2 style="margin:0;font-family:var(--display);font-weight:500;font-style:italic;font-size:20px;">By book</h2>
+<sc-for list="{{ byBook }}" as="r" hint-placeholder-count="4"><div style="display:flex;flex-direction:column;gap:6px;"><div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;"><span style="font-family:var(--display);font-size:16px;font-weight:500;">{{ r.t }}</span><span style="font-size:14px;color:var(--muted);">{{ r.time }}</span></div><div style="height:6px;border-radius:3px;background:var(--chip);"><div style="width:{{ r.w }};height:100%;border-radius:3px;background:{{ r.bg }};"></div></div></div></sc-for>
+</section>
+</main>
+</sc-if>
+
+<sc-if value="{{ isSettings }}">
+<main style="flex:1;min-height:0;overflow-y:auto;padding:10px 20px 24px;display:flex;flex-direction:column;gap:14px;">
+<h1 style="margin:0 0 6px;font-family:var(--display);font-weight:500;font-size:32px;letter-spacing:-0.015em;">Settings</h1>
+<div style="padding:0 4px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);">Reading</div>
+<div style="display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:14px;">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:60px;padding:8px 8px 8px 16px;"><div><div style="font-size:17px;">Default speed</div><div style="font-size:13px;color:var(--muted);">Used the first time you open a book</div></div><div style="display:flex;align-items:center;border:1px solid var(--line-strong);border-radius:10px;"><button onClick="{{ slower }}" aria-label="Slower" style="width:40px;height:44px;border:0;background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"></path></svg></button><span style="min-width:40px;text-align:center;font-family:var(--display);font-size:19px;font-weight:500;font-variant-numeric:tabular-nums;">{{ wpm }}</span><button onClick="{{ faster }}" aria-label="Faster" style="width:40px;height:44px;border:0;background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button></div></div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:60px;padding:8px 16px;border-top:1px solid var(--line);"><div><div style="font-size:17px;">Words per flash</div><div style="font-size:13px;color:var(--muted);">Two or three can help above 500 wpm</div></div><div role="radiogroup" aria-label="Words per flash" style="display:flex;padding:3px;border-radius:9px;background:var(--chip);"><sc-for list="{{ wpfSeg }}" as="o" hint-placeholder-count="3"><button role="radio" onClick="{{ o.pick }}" style="width:40px;height:36px;border:0;border-radius:7px;background:{{ o.bg }};box-shadow:{{ o.sh }};color:var(--ink);font-family:var(--ui);font-size:15px;cursor:pointer;">{{ o.label }}</button></sc-for></div></div>
+<sc-for list="{{ toggles }}" as="t" hint-placeholder-count="4">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:60px;padding:8px 16px;border-top:1px solid var(--line);"><div><div style="font-size:17px;">{{ t.label }}</div><div style="font-size:13px;color:var(--muted);">{{ t.note }}</div></div><button role="switch" aria-label="{{ t.label }}" aria-checked="{{ t.on }}" onClick="{{ t.flip }}" style="flex:none;width:51px;height:31px;padding:2px;border:0;border-radius:16px;background:{{ t.bg }};display:flex;justify-content:{{ t.j }};cursor:pointer;"><span style="width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);"></span></button></div>
+</sc-for>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:60px;padding:8px 16px;border-top:1px solid var(--line);"><div><div style="font-size:17px;">Hide controls</div><div style="font-size:13px;color:var(--muted);">Tap the screen to bring them back</div></div><div role="radiogroup" aria-label="Hide controls" style="display:flex;padding:3px;border-radius:9px;background:var(--chip);"><sc-for list="{{ hideSeg }}" as="o" hint-placeholder-count="2"><button role="radio" onClick="{{ o.pick }}" style="height:36px;padding:0 12px;border:0;border-radius:7px;background:{{ o.bg }};box-shadow:{{ o.sh }};color:var(--ink);font-family:var(--ui);font-size:15px;white-space:nowrap;cursor:pointer;">{{ o.label }}</button></sc-for></div></div>
+</div>
+<div style="padding:10px 4px 0;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);">More</div>
+<div style="display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:14px;">
+<sc-for list="{{ moreRows }}" as="m" hint-placeholder-count="4"><a href="#" style="display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:52px;padding:0 16px;border-top:1px solid {{ m.bt }};text-decoration:none;color:var(--ink);font-size:17px;"><span>{{ m.label }}</span><span style="display:flex;align-items:center;gap:8px;font-size:14px;font-style:italic;color:var(--muted);">{{ m.meta }}<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></span></a></sc-for>
+</div>
+</main>
+</sc-if>
+
+<sc-if value="{{ showTabs }}" hint-placeholder-val="{{ true }}">
+<nav aria-label="Main" style="flex:none;display:grid;grid-template-columns:repeat(5,1fr);padding:6px 4px 34px;background:var(--sidebar);border-top:1px solid var(--line);">
+<a href="#" onClick="{{ goHome }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;height:48px;justify-content:center;text-decoration:none;font-size:11px;color:{{ nav.home }};"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5 12 3.5l8.5 7V20.5h-5.5v-6h-6v6H3.5z"></path></svg>Home</a>
+<a href="#" onClick="{{ goLibrary }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;height:48px;justify-content:center;text-decoration:none;font-size:11px;color:{{ nav.library }};"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h3v16H5zM10.5 4h3v16h-3z"></path><path d="m16 5.2 2.9-.8 3.6 15-2.9.8z"></path></svg>Library</a>
+<a href="#" onClick="{{ goCollections }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;height:48px;justify-content:center;text-decoration:none;font-size:11px;color:{{ nav.collections }};"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5H9l2 2h8.5A1.5 1.5 0 0 1 21 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5z"></path></svg>Collections</a>
+<a href="#" onClick="{{ goStats }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;height:48px;justify-content:center;text-decoration:none;font-size:11px;color:{{ nav.stats }};"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 20V11M10 20V5M16 20v-6M21 20H3"></path></svg>Stats</a>
+<a href="#" onClick="{{ goSettings }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;height:48px;justify-content:center;text-decoration:none;font-size:11px;color:{{ nav.settings }};"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Settings</a>
+</nav>
+</sc-if>
+
+<sc-if value="{{ isReader }}">
+<header style="flex:none;opacity:{{ chrome }};transition:opacity .5s;display:grid;grid-template-columns:96px minmax(0,1fr) 96px;align-items:center;height:52px;padding:0 8px;">
+<button onClick="{{ goLibrary }}" aria-label="Back to library" style="justify-self:start;width:44px;height:44px;border:0;border-radius:22px;background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>
+<div style="text-align:center;min-width:0;"><div style="font-family:var(--display);font-size:16px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Middlemarch</div><div style="font-size:12px;font-style:italic;color:var(--muted);">Chapter 38</div></div>
+<div style="justify-self:end;display:flex;">
+<button aria-label="Add bookmark" style="width:44px;height:44px;border:0;border-radius:22px;background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h12v17l-6-4-6 4z"></path></svg></button>
+<button onClick="{{ openAppearance }}" aria-label="Reading appearance" style="width:44px;height:44px;border:0;border-radius:22px;background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 19 8 6l5 13M4.8 15h6.4M14.5 19l3.2-8 3.3 8M15.5 16.8h4.3"></path></svg></button>
+</div>
+</header>
+<div onClick="{{ stageTap }}" style="flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;padding:0 16px;cursor:pointer;">
+<sc-if value="{{ notImage }}" hint-placeholder-val="{{ true }}">
+<div aria-live="polite" aria-label="Current word" style="width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:baseline;font-family:var(--reader);font-size:{{ rsize }}px;line-height:1;">
+<div style="display:flex;justify-content:flex-end;align-items:baseline;gap:0.28em;white-space:nowrap;overflow:hidden;padding:0.2em 0;"><span style="color:var(--ghost);">{{ w.prev }}</span><span><b style="font-weight:{{ w.bw }};">{{ w.preB }}</b>{{ w.preR }}</span></div>
+<div style="position:relative;color:var(--focal);font-weight:700;"><span style="position:absolute;left:50%;top:-24px;width:2px;height:14px;margin-left:-1px;background:var(--focal);opacity:{{ guideOp }};"></span>{{ w.focal }}<span style="position:absolute;left:50%;bottom:-24px;width:2px;height:14px;margin-left:-1px;background:var(--focal);opacity:{{ guideOp }};"></span></div>
+<div style="display:flex;align-items:baseline;gap:0.28em;white-space:nowrap;overflow:hidden;padding:0.2em 0;"><span><b style="font-weight:{{ w.bw }};">{{ w.postB }}</b>{{ w.postR }}</span><span style="color:var(--ghost);">{{ w.next }}</span></div>
+</div>
+<sc-if value="{{ showPeek }}" hint-placeholder-val="{{ true }}"><section onClick="{{ stopProp }}" aria-label="Context" style="width:100%;box-sizing:border-box;padding:14px 16px 16px;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);cursor:default;">
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;font-size:12px;color:var(--muted);"><span style="letter-spacing:.14em;text-transform:uppercase;">Context</span><span style="font-style:italic;">Tap a word to jump</span></div>
+<p style="margin:0;font-family:var(--reader);font-size:15px;line-height:1.6;display:flex;flex-wrap:wrap;column-gap:0.27em;"><sc-for list="{{ peekWords }}" as="pw" hint-placeholder-count="60"><span onClick="{{ pw.jump }}" style="cursor:pointer;border-radius:3px;background:{{ pw.bg }};box-shadow:{{ pw.sh }};"><b style="font-weight:{{ pw.bw }};">{{ pw.b }}</b>{{ pw.r }}</span></sc-for></p>
+</section></sc-if>
+<sc-if value="{{ showTapHint }}"><div style="font-size:14px;font-style:italic;color:var(--muted);">Tap anywhere to play or pause</div></sc-if>
+</sc-if>
+<sc-if value="{{ ovImage }}">
+<figure onClick="{{ stopProp }}" style="margin:0;display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;cursor:default;">
+<div style="width:100%;height:260px;border-radius:6px;border:1px solid var(--line);background:repeating-linear-gradient(135deg,var(--stripe) 0 8px,transparent 8px 16px);display:grid;place-items:center;color:var(--muted);font:12px ui-monospace,Menlo,monospace;">book illustration</div>
+<figcaption style="font-family:var(--reader);font-size:15px;font-style:italic;color:var(--muted);text-align:center;text-wrap:pretty;">Dorothea in the Vatican, from the 1910 illustrated edition</figcaption>
+</figure>
+<div onClick="{{ stopProp }}" style="width:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:10px;padding:14px;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);cursor:default;">
+<span style="display:flex;align-items:center;gap:10px;font-size:16px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="1.5"></rect><path d="m3.5 16 5-5 4 4 3-3 5 5"></path></svg>Paused at an image</span>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+<button onClick="{{ skipImages }}" style="height:48px;border-radius:10px;border:1px solid var(--line-strong);background:transparent;color:var(--ink);font-family:var(--ui);font-size:15px;cursor:pointer;">Skip images</button>
+<button onClick="{{ continueImg }}" style="display:flex;align-items:center;justify-content:center;gap:8px;height:48px;border-radius:10px;border:0;background:var(--accent);color:var(--on-accent);font-family:var(--ui);font-size:16px;font-weight:500;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"></path></svg>Continue</button>
+</div>
+</div>
+</sc-if>
+</div>
+<footer style="flex:none;opacity:{{ chrome }};transition:opacity .5s;padding:0 20px 34px;display:flex;flex-direction:column;gap:12px;">
+<div role="slider" aria-label="Position in book" aria-valuenow="38" aria-valuemin="0" aria-valuemax="100" style="position:relative;height:20px;display:flex;align-items:center;">
+<div style="position:absolute;left:0;right:0;height:3px;border-radius:2px;background:var(--line-strong);"></div>
+<div style="position:absolute;left:0;width:{{ pctStr }};height:3px;border-radius:2px;background:var(--accent);"></div>
+<span style="position:absolute;left:{{ pctStr }};width:16px;height:16px;margin-left:-8px;border-radius:50%;background:var(--surface);border:2px solid var(--accent);box-sizing:border-box;"></span>
+</div>
+<div style="display:flex;justify-content:space-between;margin-top:-6px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;"><span style="color:var(--ink);">{{ stats.top }}</span><span>{{ stats.short }}</span></div>
+<div style="display:flex;align-items:center;justify-content:center;gap:6px;">
+<button onClick="{{ prevSentence }}" aria-label="Previous sentence" style="width:48px;height:48px;border:0;border-radius:24px;background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m11 18-6-6 6-6M19 18l-6-6 6-6"></path></svg></button>
+<button onClick="{{ prevWord }}" aria-label="Previous word" style="width:48px;height:48px;border:0;border-radius:24px;background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>
+<button onClick="{{ togglePlay }}" aria-label="{{ playLabel }}" style="width:68px;height:68px;margin:0 10px;border:0;border-radius:50%;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;cursor:pointer;"><sc-if value="{{ playing }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M8.5 5v14M15.5 5v14"></path></svg></sc-if><sc-if value="{{ paused }}" hint-placeholder-val="{{ true }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7.5 4.5v15l12-7.5z"></path></svg></sc-if></button>
+<button onClick="{{ nextWord }}" aria-label="Next word" style="width:48px;height:48px;border:0;border-radius:24px;background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button>
+<button onClick="{{ nextSentence }}" aria-label="Next sentence" style="width:48px;height:48px;border:0;border-radius:24px;background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13 18 6-6-6-6M5 18l6-6-6-6"></path></svg></button>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+<div style="display:flex;gap:6px;">
+<button onClick="{{ preset250 }}" style="height:44px;padding:0 13px;border-radius:22px;border:1px solid var(--line-strong);background:transparent;color:var(--ink);font-family:var(--ui);font-size:14px;cursor:pointer;">250</button>
+<button onClick="{{ preset400 }}" style="height:44px;padding:0 13px;border-radius:22px;border:1px solid var(--line-strong);background:transparent;color:var(--ink);font-family:var(--ui);font-size:14px;cursor:pointer;">400</button>
+<button onClick="{{ preset600 }}" style="height:44px;padding:0 13px;border-radius:22px;border:1px solid var(--line-strong);background:transparent;color:var(--ink);font-family:var(--ui);font-size:14px;cursor:pointer;">600</button>
+</div>
+<div style="display:flex;align-items:center;border:1px solid var(--line-strong);border-radius:12px;background:var(--surface);">
+<button onClick="{{ slower }}" aria-label="Slower" style="width:44px;height:48px;border:0;background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"></path></svg></button>
+<div style="text-align:center;min-width:46px;"><div style="font-family:var(--display);font-size:21px;font-weight:500;line-height:1;font-variant-numeric:tabular-nums;">{{ wpm }}</div><div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);">wpm</div></div>
+<button onClick="{{ faster }}" aria-label="Faster" style="width:44px;height:48px;border:0;background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+</div>
+</div>
+</footer>
+<sc-if value="{{ playing }}"><div aria-hidden="true" style="position:absolute;left:0;bottom:0;height:3px;width:{{ pctStr }};background:var(--accent);"></div></sc-if>
+</sc-if>
+
+<sc-if value="{{ ovSearch }}">
+<div role="dialog" aria-label="Search" style="position:absolute;inset:0;z-index:5;background:var(--bg);display:flex;flex-direction:column;padding-top:47px;">
+<div style="display:flex;align-items:center;gap:10px;padding:8px 16px 12px;">
+<div style="flex:1;display:flex;align-items:center;gap:10px;height:44px;padding:0 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line-strong);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true" style="color:var(--muted);"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg><span style="flex:1;font-size:18px;">ma<span style="display:inline-block;width:2px;height:20px;margin-left:1px;vertical-align:-4px;background:var(--accent);"></span></span></div>
+<button onClick="{{ closeOverlay }}" style="height:44px;padding:0 4px;border:0;background:transparent;color:var(--accent-text);font-family:var(--ui);font-size:17px;cursor:pointer;">Cancel</button>
+</div>
+<div style="flex:1;overflow-y:auto;padding:0 12px;display:flex;flex-direction:column;gap:2px;">
+<div style="padding:10px 8px 4px;font-size:13px;font-style:italic;color:var(--muted);">Books</div>
+<a href="#" onClick="{{ openReader }}" style="display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:14px;align-items:center;padding:10px 8px;border-radius:10px;background:var(--chip);text-decoration:none;color:var(--ink);"><span style="width:32px;height:46px;border-radius:1px 3px 3px 1px;background:var(--hero-cover);"></span><span><span style="display:block;font-family:var(--display);font-size:17px;font-weight:500;">Middle<strong style="font-weight:700;">ma</strong>rch</span><span style="display:block;font-size:14px;font-style:italic;color:var(--muted);">George Eliot · 38%</span></span><span style="font-size:14px;color:var(--accent-text);">Resume</span></a>
+<a href="#" onClick="{{ openDetails }}" style="display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:14px;align-items:center;padding:10px 8px;border-radius:10px;text-decoration:none;color:var(--ink);"><span style="width:32px;height:46px;border-radius:1px 3px 3px 1px;background:{{ medBg }};"></span><span><span style="display:block;font-family:var(--display);font-size:17px;font-weight:500;">Meditations</span><span style="display:block;font-size:14px;font-style:italic;color:var(--muted);"><strong style="font-weight:700;font-style:normal;color:var(--ink);">Ma</strong>rcus Aurelius · Finished</span></span><span></span></a>
+<div style="padding:14px 8px 4px;font-size:13px;font-style:italic;color:var(--muted);">Actions</div>
+<a href="#" onClick="{{ goCollections }}" style="display:flex;align-items:center;gap:14px;min-height:48px;padding:0 8px;border-radius:10px;text-decoration:none;color:var(--ink);font-size:17px;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true" style="color:var(--muted);"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5H9l2 2h8.5A1.5 1.5 0 0 1 21 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5z"></path></svg><span><strong style="font-weight:700;">Ma</strong>nage shelves</span></a>
+<a href="#" style="display:flex;align-items:center;gap:14px;min-height:48px;padding:0 8px;border-radius:10px;text-decoration:none;color:var(--ink);font-size:17px;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:var(--muted);"><circle cx="12" cy="12" r="8.5"></circle><path d="m8.5 12 2.5 2.5 4.5-5"></path></svg><span><strong style="font-weight:700;">Ma</strong>rk Middlemarch as finished</span></a>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ ovImportAny }}">
+<div onClick="{{ closeOverlay }}" style="position:absolute;inset:0;z-index:4;background:rgba(28,20,12,.34);"></div>
+<div role="dialog" aria-label="Add to your library" style="position:absolute;left:0;right:0;bottom:0;top:64px;z-index:5;background:var(--surface);border-radius:20px 20px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.18);display:flex;flex-direction:column;">
+<div style="width:36px;height:5px;border-radius:3px;background:var(--line-strong);margin:8px auto 0;"></div>
+<header style="display:flex;flex-direction:column;gap:10px;padding:10px 12px 0 20px;border-bottom:1px solid var(--line);">
+<div style="display:flex;align-items:center;justify-content:space-between;"><h2 style="margin:0;font-family:var(--display);font-weight:500;font-size:24px;">Add to your library</h2><button onClick="{{ closeOverlay }}" aria-label="Close" style="width:44px;height:44px;border:0;border-radius:22px;background:transparent;color:var(--muted);display:grid;place-items:center;cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button></div>
+<div role="tablist" style="display:flex;gap:24px;"><button role="tab" onClick="{{ openImport }}" style="height:44px;padding:0;border:0;border-bottom:2px solid {{ tabs.files }};margin-bottom:-1px;background:transparent;color:var(--ink);font-family:var(--ui);font-size:16px;cursor:pointer;">Files</button><button role="tab" onClick="{{ openPaste }}" style="height:44px;padding:0;border:0;border-bottom:2px solid {{ tabs.paste }};margin-bottom:-1px;background:transparent;color:var(--ink);font-family:var(--ui);font-size:16px;cursor:pointer;">Paste text</button></div>
+</header>
+<sc-if value="{{ ovImport }}">
+<div style="flex:1;min-height:0;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px;">
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:24px 16px;border:1.5px dashed var(--line-strong);border-radius:14px;background:var(--bg);text-align:center;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:var(--muted);"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"></path></svg><div style="font-family:var(--display);font-size:19px;font-weight:500;">EPUB, PDF or TXT</div><div style="font-size:14px;font-style:italic;color:var(--muted);">Files stay on this device</div><button style="margin-top:6px;height:46px;padding:0 20px;border-radius:10px;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);font-family:var(--ui);font-size:16px;cursor:pointer;">Choose from Files</button></div>
+<div style="display:flex;flex-direction:column;">
+<div style="display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);"><span style="width:24px;height:36px;border-radius:1px 3px 3px 1px;background:oklch(0.46 0.07 310);"></span><div style="min-width:0;"><div style="font-size:16px;">Frankenstein</div><div style="font-size:13px;color:var(--muted);">EPUB · 75,000 words</div></div><span style="display:flex;align-items:center;gap:5px;font-size:14px;color:var(--accent-text);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"></path></svg>Ready</span></div>
+<div style="display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);"><span style="width:24px;height:36px;border-radius:1px 3px 3px 1px;background:var(--chip);"></span><div style="display:flex;flex-direction:column;gap:6px;min-width:0;"><div><div style="font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">origin-of-species.pdf</div><div style="font-size:13px;color:var(--muted);">Extracting text · page 214 of 502</div></div><div style="height:3px;border-radius:2px;background:var(--line-strong);"><div style="width:43%;height:100%;border-radius:2px;background:var(--accent);"></div></div></div><span style="font-size:14px;color:var(--muted);">43%</span></div>
+<div style="display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 0;"><span style="width:24px;height:36px;border-radius:1px 3px 3px 1px;border:1px dashed var(--line-strong);box-sizing:border-box;"></span><div style="min-width:0;"><div style="font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">annual-report-scan.pdf</div><div style="font-size:13px;color:var(--muted);">Scanned images with no text layer</div></div><button style="height:44px;padding:0 4px;border:0;background:transparent;color:var(--muted);font-family:var(--ui);font-size:14px;text-decoration:underline;cursor:pointer;">Remove</button></div>
+</div>
+</div>
+<footer style="display:flex;flex-direction:column;gap:10px;padding:14px 20px 34px;border-top:1px solid var(--line);"><span style="font-size:14px;font-style:italic;color:var(--muted);text-align:center;">1 ready · 1 importing · 1 can’t be read</span><button onClick="{{ goLibrary }}" style="height:50px;border-radius:10px;border:0;background:var(--accent);color:var(--on-accent);font-family:var(--ui);font-size:17px;font-weight:500;cursor:pointer;">Done</button></footer>
+</sc-if>
+<sc-if value="{{ ovPaste }}">
+<div style="flex:1;min-height:0;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;">
+<label style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--muted);">Title<span style="display:flex;align-items:center;height:46px;padding:0 12px;border:1px solid var(--line-strong);border-radius:10px;background:var(--bg);font-family:var(--display);font-size:18px;font-weight:500;color:var(--ink);">Q4 kickoff memo</span></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--muted);">Text<span style="display:block;height:250px;overflow:hidden;padding:12px 14px;border:2px solid var(--accent);border-radius:10px;background:var(--bg);font-family:var(--reader);font-size:16px;line-height:1.6;color:var(--ink);text-wrap:pretty;">Team, thanks for a strong quarter. Before kickoff on Monday, please read the three priorities below and bring questions.<br><br>First, imports move fully on device. Large PDFs should open in under two seconds, and nothing leaves the reader’s machine. Second, we ship narration for every format, starting with EPUB.</span></label>
+<div style="display:flex;justify-content:space-between;font-size:14px;color:var(--muted);"><span>94 words</span><span style="font-style:italic;">About 18 seconds at 320 wpm</span></div>
+<label style="display:flex;align-items:center;gap:10px;min-height:44px;font-size:16px;"><span style="width:22px;height:22px;border-radius:6px;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"></path></svg></span>Save to library</label>
+</div>
+<footer style="padding:14px 20px 34px;border-top:1px solid var(--line);"><button onClick="{{ openReader }}" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;height:50px;border-radius:10px;border:0;background:var(--accent);color:var(--on-accent);font-family:var(--ui);font-size:17px;font-weight:500;cursor:pointer;"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"></path></svg>Start reading</button></footer>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ ovDetails }}">
+<div onClick="{{ closeOverlay }}" style="position:absolute;inset:0;z-index:4;background:rgba(28,20,12,.34);"></div>
+<div role="dialog" aria-label="Book details" style="position:absolute;left:0;right:0;bottom:0;top:96px;z-index:5;background:var(--surface);border-radius:20px 20px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.18);display:flex;flex-direction:column;">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 8px 0 20px;"><div style="width:36px;height:5px;border-radius:3px;background:var(--line-strong);position:absolute;left:50%;top:8px;margin-left:-18px;"></div><span style="font-size:15px;font-style:italic;color:var(--muted);padding-top:14px;">Details</span><button onClick="{{ closeOverlay }}" aria-label="Close" style="margin-top:8px;width:44px;height:44px;border:0;border-radius:22px;background:transparent;color:var(--muted);display:grid;place-items:center;cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button></div>
+<div style="flex:1;min-height:0;overflow-y:auto;padding:8px 20px 20px;display:flex;flex-direction:column;gap:20px;">
+<div style="display:grid;grid-template-columns:84px minmax(0,1fr);gap:16px;align-items:center;">
+<div style="position:relative;width:84px;height:126px;border-radius:2px 5px 5px 2px;overflow:hidden;background:var(--hero-cover);color:#f6efe2;box-shadow:var(--book-shadow);"><div style="position:absolute;inset:5px;border:1px solid rgba(246,239,226,.45);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:12px 3px 7px;text-align:center;"><span style="font-family:var(--display);font-size:13px;font-weight:500;line-height:1.1;">Middlemarch</span><span style="font-size:6px;letter-spacing:.14em;text-transform:uppercase;">George Eliot</span></div></div>
+<div style="display:flex;flex-direction:column;gap:4px;min-width:0;"><h2 style="margin:0;font-family:var(--display);font-weight:500;font-size:26px;line-height:1.1;">Middlemarch</h2><div style="font-size:16px;font-style:italic;color:var(--muted);">George Eliot</div><a href="#" style="margin-top:6px;font-size:14px;color:var(--accent-text);">Edit title, author, cover</a></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;"><div style="display:flex;justify-content:space-between;font-size:15px;"><span>38% read</span><span style="font-style:italic;color:var(--muted);">10 h 12 m left</span></div><div style="height:4px;border-radius:2px;background:var(--line-strong);"><div style="width:38%;height:100%;border-radius:2px;background:var(--accent);"></div></div></div>
+<dl style="margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 18px;font-size:15px;"><dt style="color:var(--muted);">Format</dt><dd style="margin:0;">EPUB · 1.8 MB</dd><dt style="color:var(--muted);">Length</dt><dd style="margin:0;">316,000 words · 86 chapters</dd><dt style="color:var(--muted);">Added</dt><dd style="margin:0;">3 September</dd><dt style="color:var(--muted);">Last read</dt><dd style="margin:0;">Today at 7:42 pm</dd></dl>
+<div style="display:flex;flex-direction:column;gap:10px;"><span style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);">Shelves &amp; tags</span><div style="display:flex;flex-wrap:wrap;gap:8px;"><span style="display:flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:18px;background:var(--chip);font-size:15px;"><span style="width:7px;height:11px;border-radius:1px;background:oklch(0.5 0.08 20);"></span>Fiction</span><span style="display:flex;align-items:center;height:36px;padding:0 14px;border-radius:18px;border:1px solid var(--line-strong);font-size:15px;font-style:italic;">victorian</span><span style="display:flex;align-items:center;height:36px;padding:0 14px;border-radius:18px;border:1px solid var(--line-strong);font-size:15px;font-style:italic;">book club</span><button style="display:flex;align-items:center;gap:6px;height:36px;padding:0 14px;border-radius:18px;border:1px dashed var(--line-strong);background:transparent;color:var(--muted);font-family:var(--ui);font-size:15px;cursor:pointer;">+ Add</button></div></div>
+<div style="display:flex;flex-direction:column;"><span style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Contents</span>
+<a href="#" style="display:flex;justify-content:space-between;align-items:center;min-height:44px;padding:0 10px;border-radius:8px;font-size:15px;text-decoration:none;color:var(--muted);"><span>Chapter 37</span><span style="font-style:italic;">Read</span></a>
+<a href="#" onClick="{{ openReader }}" style="display:flex;justify-content:space-between;align-items:center;min-height:44px;padding:0 10px;border-radius:8px;font-size:15px;text-decoration:none;color:var(--ink);background:var(--mark);"><span style="font-weight:500;">Chapter 38</span><span style="color:var(--accent-text);">Reading · 62%</span></a>
+<a href="#" style="display:flex;justify-content:space-between;align-items:center;min-height:44px;padding:0 10px;border-radius:8px;font-size:15px;text-decoration:none;color:var(--ink);"><span>Chapter 39</span><span style="color:var(--muted);">14 min</span></a>
+</div>
+<button style="align-self:flex-start;height:44px;padding:0;border:0;background:transparent;color:var(--muted);font-family:var(--ui);font-size:15px;cursor:pointer;">Remove from library</button>
+</div>
+<footer style="padding:12px 20px 34px;border-top:1px solid var(--line);"><button onClick="{{ openReader }}" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;height:50px;border-radius:10px;border:0;background:var(--accent);color:var(--on-accent);font-family:var(--ui);font-size:17px;font-weight:500;cursor:pointer;"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"></path></svg>Resume</button></footer>
+</div>
+</sc-if>
+
+<sc-if value="{{ ovAppearance }}">
+<div onClick="{{ closeOverlay }}" style="position:absolute;inset:0;z-index:4;background:rgba(28,20,12,.2);"></div>
+<div role="dialog" aria-label="Reading appearance" style="position:absolute;left:0;right:0;bottom:0;z-index:5;padding:8px 20px 34px;background:var(--surface);border-radius:20px 20px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.2);display:flex;flex-direction:column;gap:16px;">
+<div style="width:36px;height:5px;border-radius:3px;background:var(--line-strong);margin:0 auto;"></div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-top:-6px;"><h2 style="margin:0;font-family:var(--display);font-weight:500;font-size:22px;">Appearance</h2><button onClick="{{ closeOverlay }}" aria-label="Close" style="width:44px;height:44px;margin-right:-10px;border:0;border-radius:22px;background:transparent;color:var(--muted);display:grid;place-items:center;cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button></div>
+<div role="radiogroup" aria-label="Typeface" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;"><sc-for list="{{ faces }}" as="f" hint-placeholder-count="3"><button role="radio" onClick="{{ f.pick }}" style="height:50px;border-radius:10px;border:{{ f.bd }};background:{{ f.bg }};color:var(--ink);font-family:{{ f.ff }};font-size:17px;cursor:pointer;">{{ f.label }}</button></sc-for></div>
+<div style="display:flex;flex-direction:column;gap:8px;"><div style="display:flex;justify-content:space-between;"><span style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);">Word size</span><span style="font-size:14px;color:var(--muted);">{{ rsize }} px</span></div><div style="display:flex;align-items:center;gap:12px;"><button onClick="{{ smaller }}" aria-label="Smaller" style="width:44px;height:44px;border-radius:10px;border:1px solid var(--line-strong);background:transparent;color:var(--ink);font-family:var(--reader);font-size:14px;cursor:pointer;">A</button><div style="position:relative;flex:1;height:20px;display:flex;align-items:center;"><div style="position:absolute;left:0;right:0;height:3px;border-radius:2px;background:var(--line-strong);"></div><div style="position:absolute;left:0;width:{{ sizePct }};height:3px;border-radius:2px;background:var(--accent);"></div><span style="position:absolute;left:{{ sizePct }};width:20px;height:20px;margin-left:-10px;border-radius:50%;background:var(--surface);border:2px solid var(--accent);box-sizing:border-box;"></span></div><button onClick="{{ bigger }}" aria-label="Larger" style="width:44px;height:44px;border-radius:10px;border:1px solid var(--line-strong);background:transparent;color:var(--ink);font-family:var(--reader);font-size:21px;cursor:pointer;">A</button></div></div>
+<div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);">Focal letter</span><div style="display:flex;gap:6px;"><sc-for list="{{ swatches }}" as="s" hint-placeholder-count="5"><button onClick="{{ s.pick }}" aria-label="{{ s.c }}" style="width:44px;height:44px;border:0;background:transparent;display:grid;place-items:center;cursor:pointer;"><span style="width:30px;height:30px;border-radius:50%;background:{{ s.c }};box-shadow:0 0 0 2px var(--surface), 0 0 0 4px {{ s.ring }};"></span></button></sc-for></div></div>
+<div style="display:flex;flex-direction:column;border-top:1px solid var(--line);">
+<sc-for list="{{ apRows }}" as="t" hint-placeholder-count="5"><div style="display:flex;align-items:center;justify-content:space-between;min-height:50px;border-bottom:1px solid {{ t.bb }};"><span style="font-size:16px;">{{ t.label }}</span><button role="switch" aria-label="{{ t.label }}" aria-checked="{{ t.on }}" onClick="{{ t.flip }}" style="width:51px;height:31px;padding:2px;border:0;border-radius:16px;background:{{ t.bg }};display:flex;justify-content:{{ t.j }};cursor:pointer;"><span style="width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);"></span></button></div></sc-for>
+</div>
+</div>
+</sc-if>
+<div aria-hidden="true" style="position:absolute;left:50%;bottom:8px;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:var(--ink);opacity:.85;z-index:9;pointer-events:none;"></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844},&quot;screen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;home&quot;,&quot;library&quot;,&quot;collections&quot;,&quot;stats&quot;,&quot;settings&quot;,&quot;reader&quot;],&quot;default&quot;:&quot;home&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;overlay&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;none&quot;,&quot;search&quot;,&quot;import&quot;,&quot;paste&quot;,&quot;details&quot;,&quot;appearance&quot;,&quot;image&quot;],&quot;default&quot;:&quot;none&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;palette&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;sepia&quot;,&quot;moss&quot;],&quot;default&quot;:&quot;sepia&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;ghostWords&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  data = [
+    { t: 'Middlemarch', a: 'George Eliot', p: 38, hue: 25 },
+    { t: 'Moby-Dick', a: 'Herman Melville', p: 71, hue: 235 },
+    { t: 'Meditations', a: 'Marcus Aurelius', p: 100, hue: 150 },
+    { t: 'Q3 Planning Notes', a: 'Pasted text', p: 54, hue: 260 },
+    { t: 'Walden', a: 'Henry David Thoreau', p: 12, hue: 110 },
+    { t: 'On the Origin of Species', a: 'Charles Darwin', p: 23, hue: 70, art: true },
+    { t: 'Frankenstein', a: 'Mary Shelley', p: 0, hue: 310 },
+    { t: 'Dracula', a: 'Bram Stoker', p: 0, hue: 10 },
+    { t: 'Pride and Prejudice', a: 'Jane Austen', p: 100, hue: 345 },
+    { t: 'The Odyssey', a: 'Homer', p: 6, hue: 195, art: true }
+  ];
+  words = 'Her hand and wrist were so finely formed that she could wear sleeves not less bare of style than those in which the Blessed Virgin appeared to Italian painters; and her profile as well as her stature and bearing seemed to gain the more dignity from her plain garments, which by the side of provincial fashion gave her the impression of being a fit quotation from the Bible.'.split(' ');
+  start = this.words.indexOf('provincial');
+  state = { screen: null, overlay: null, idx: null, playing: false, wpm: 320, chrome: 1, rsize: 44, ghost: null, guides: true, peek: true, ctxAlways: false, bionic: false, focal: null, face: 'Literata', wpf: '1', hide: 'After 2 s', status: 'All', range: 'Week', tg: { punct: true, long: true, img: true, ramp: false } };
+  scr() { return this.state.screen ?? this.props.screen ?? 'home'; }
+  ov() { return this.state.overlay ?? this.props.overlay ?? 'none'; }
+  stop(e) { if (e && e.preventDefault) e.preventDefault(); if (e && e.stopPropagation) e.stopPropagation(); }
+  setOv = (overlay) => (e) => { this.stop(e); if (overlay !== 'none') this.pause(); this.setState({ overlay }); };
+  go = (screen) => (e) => { this.stop(e); this.pause(); this.setState({ screen, overlay: 'none' }); };
+  sw(on, flip) { return { on, flip, bg: on ? 'var(--accent)' : 'var(--line-strong)', j: on ? 'flex-end' : 'flex-start' }; }
+  seg(opts, cur, key) { return opts.map(o => ({ label: o, bg: o === cur ? 'var(--surface)' : 'transparent', sh: o === cur ? 'var(--shadow)' : 'none', pick: () => this.setState({ [key]: o }) })); }
+  componentWillUnmount() { clearTimeout(this.t); clearTimeout(this.h); }
+  cur() { return this.state.idx ?? this.start; }
+  schedule = () => {
+    clearTimeout(this.t);
+    if (!this.state.playing) return;
+    const w = this.words[this.cur()], tg = this.state.tg;
+    let d = 60000 / this.state.wpm;
+    if (tg.punct) { if (/[.;!?]$/.test(w)) d *= 2.2; else if (/[,:]$/.test(w)) d *= 1.6; }
+    if (tg.long && w.length > 8) d *= 1.25;
+    this.t = setTimeout(() => {
+      const n = this.cur() + 1;
+      if (n >= this.words.length) { this.setState({ playing: false, chrome: 1, overlay: tg.img ? 'image' : 'none' }); return; }
+      this.setState({ idx: n }, this.schedule);
+    }, d);
+  };
+  hideSoon = () => { clearTimeout(this.h); if (this.state.hide === 'Never') return; this.h = setTimeout(() => { if (this.state.playing) this.setState({ chrome: 0 }); }, 2000); };
+  play = () => this.setState({ playing: true, chrome: 1 }, () => { this.schedule(); this.hideSoon(); });
+  pause = () => { clearTimeout(this.t); clearTimeout(this.h); if (this.state.playing) this.setState({ playing: false, chrome: 1 }); };
+  toggle = () => (this.state.playing ? this.pause() : this.play());
+  continueImg = (e) => { this.stop(e); this.setState({ overlay: 'none', idx: 0 }, this.play); };
+  bio(w, o) {
+    const pre = w.slice(0, o), post = w.slice(o + 1);
+    if (!this.state.bionic) return { preB: '', preR: pre, postB: '', postR: post, bw: 700 };
+    const b = Math.ceil(w.replace(/[^A-Za-z0-9'’-]+$/, '').length / 2), pb = Math.max(0, b - o - 1);
+    return { preB: pre.slice(0, b), preR: pre.slice(b), postB: post.slice(0, pb), postR: post.slice(pb), bw: 700 };
+  }
+  bioCtx(x) {
+    if (!this.state.bionic) return { b: '', r: x, bw: 700 };
+    const b = Math.ceil(x.replace(/[^A-Za-z0-9'’-]+$/, '').length / 2);
+    return { b: x.slice(0, b), r: x.slice(b), bw: 700 };
+  }
+  seek = (n) => this.setState({ idx: Math.max(0, Math.min(this.words.length - 1, n)) }, this.schedule);
+  sStart(i) { let j = Math.max(0, i); while (j > 0 && !/[.;!?]$/.test(this.words[j - 1])) j--; return j; }
+  prevSentence = () => { const c = this.cur(); let s = this.sStart(c); if (s === c && c > 0) s = this.sStart(c - 1); this.seek(s); };
+  nextSentence = () => { let j = this.cur() + 1; while (j < this.words.length - 1 && !/[.;!?]$/.test(this.words[j - 1])) j++; this.seek(j); };
+  setWpm = (n) => this.setState({ wpm: Math.max(50, Math.min(1000, n)) });
+  onKey = (e) => {
+    const k = e.key, ov = this.ov();
+    if (ov !== 'none' && ov !== 'image' && k === 'Escape') { this.setState({ overlay: 'none' }); return; }
+    if (this.scr() !== 'reader') return;
+    if (ov === 'image') { if (k === ' ') { e.preventDefault(); this.continueImg(); } return; }
+    if (k === ' ') { e.preventDefault(); this.toggle(); }
+    else if (k === 'ArrowLeft') { e.preventDefault(); this.seek(this.cur() - 1); }
+    else if (k === 'ArrowRight') { e.preventDefault(); this.seek(this.cur() + 1); }
+  };
+  onMove = () => { if (this.state.playing && this.state.hide !== 'Never') { if (!this.state.chrome) this.setState({ chrome: 1 }); this.hideSoon(); } };
+  renderVals() {
+    const S = this.state, screen = this.scr(), ov = this.ov();
+    const dark = (this.props.theme ?? 'light') === 'dark';
+    const v = dark ? {
+      '--bg': '#1c1813', '--surface': '#25201a', '--sidebar': '#16130f', '--chip': '#2e2820',
+      '--ink': '#ede4d3', '--muted': '#a99b87', '--ghost': 'rgba(237,228,211,.22)',
+      '--line': 'rgba(237,228,211,.10)', '--line-strong': 'rgba(237,228,211,.22)',
+      '--accent': '#e0906f', '--on-accent': '#1c1813', '--accent-text': '#e0906f', '--focal': '#f0a07c',
+      '--mark': 'rgba(240,160,124,.18)', '--focus': '#f3dcc0', '--stripe': 'rgba(237,228,211,.07)',
+      '--hero-cover': 'oklch(0.4 0.07 25)', '--shadow': '0 1px 2px rgba(0,0,0,.3)',
+      '--book-shadow': '0 1px 2px rgba(0,0,0,.4), 0 6px 14px rgba(0,0,0,.35)'
+    } : {
+      '--bg': '#f4ede0', '--surface': '#fbf7ef', '--sidebar': '#ece3d2', '--chip': '#e6dbc7',
+      '--ink': '#2b2118', '--muted': '#6b5a48', '--ghost': 'rgba(43,33,24,.24)',
+      '--line': 'rgba(60,40,20,.12)', '--line-strong': 'rgba(60,40,20,.24)',
+      '--accent': '#9e3d27', '--on-accent': '#fbf7ef', '--accent-text': '#9e3d27', '--focal': '#a83b22',
+      '--mark': 'rgba(168,59,34,.12)', '--focus': '#2b2118', '--stripe': 'rgba(60,40,20,.08)',
+      '--hero-cover': 'oklch(0.46 0.08 25)', '--shadow': '0 1px 2px rgba(60,40,20,.08), 0 8px 24px rgba(60,40,20,.06)',
+      '--book-shadow': '0 1px 2px rgba(60,40,20,.2), 0 6px 14px rgba(60,40,20,.16)'
+    };
+    const moss = {
+      light: { '--bg': '#f1efe4', '--surface': '#f9f8f1', '--sidebar': '#e7e5d6', '--chip': '#dedcc9', '--ink': '#22261c', '--muted': '#5c6150', '--ghost': 'rgba(34,38,28,.24)', '--line': 'rgba(40,50,30,.12)', '--line-strong': 'rgba(40,50,30,.24)', '--accent': '#3d6838', '--on-accent': '#f9f8f1', '--accent-text': '#3d6838', '--focal': '#2f6a3f', '--mark': 'rgba(47,106,63,.13)', '--focus': '#22261c', '--stripe': 'rgba(40,50,30,.08)', '--hero-cover': 'oklch(0.42 0.06 145)' },
+      dark: { '--bg': '#171a14', '--surface': '#1f231b', '--sidebar': '#121510', '--chip': '#2a2f24', '--ink': '#e6e8d8', '--muted': '#a3a891', '--ghost': 'rgba(230,232,216,.22)', '--line': 'rgba(230,232,216,.10)', '--line-strong': 'rgba(230,232,216,.22)', '--accent': '#9cc48a', '--on-accent': '#171a14', '--accent-text': '#9cc48a', '--focal': '#a8d094', '--mark': 'rgba(168,208,148,.18)', '--focus': '#e6e8d8', '--stripe': 'rgba(230,232,216,.07)', '--hero-cover': 'oklch(0.38 0.06 145)' }
+    };
+    if (this.props.palette === 'moss') Object.assign(v, moss[dark ? 'dark' : 'light']);
+    const faceFF = { Literata: "'Literata', Georgia, serif", Newsreader: "'Newsreader', Georgia, serif", Sans: 'system-ui, -apple-system, sans-serif' };
+    const root = { ...v, '--display': "'Newsreader', Georgia, serif", '--ui': "'Newsreader', Georgia, serif", '--reader': faceFF[S.face],
+      width: 390, height: 844, display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative', background: 'var(--bg)', color: 'var(--ink)', fontFamily: 'var(--ui)', outline: 'none' };
+    const defFocal = this.props.palette === 'moss' ? '#2f6a3f' : '#a83b22';
+    const curFocal = S.focal ?? defFocal;
+    if (S.focal) root['--focal'] = dark ? `color-mix(in oklch, ${S.focal}, white 40%)` : S.focal;
+    const all = this.data.map(b => ({ ...b,
+      coverBg: b.art ? 'var(--chip)' : `oklch(${dark ? 0.38 : 0.46} 0.07 ${b.hue})`,
+      pct: b.p + '%', status: b.p === 100 ? 'Done' : b.p === 0 ? 'New' : b.p + '%', art: !!b.art, noArt: !b.art }));
+    const flt = { All: () => true, Unread: b => b.p === 0, 'In progress': b => b.p > 0 && b.p < 100, Finished: b => b.p === 100 }[S.status];
+    const books = all.filter(flt);
+    const nav = { home: 'var(--muted)', library: 'var(--muted)', collections: 'var(--muted)', stats: 'var(--muted)', settings: 'var(--muted)' };
+    nav[screen] = 'var(--accent-text)';
+    const spine = (t, hue, w, h) => ({ t, w, h, bg: `oklch(${dark ? 0.38 : 0.46} 0.07 ${hue})` });
+    const mins = [22, 35, 0, 41, 28, 52, 18, 30, 44, 26, 38, 61, 47, 33], dl = 'SSMTWTFSSMTWTF';
+    const ghostOn = S.ghost ?? this.props.ghostWords ?? false;
+    const flipTg = (k) => () => this.setState(s => ({ tg: { ...s.tg, [k]: !s.tg[k] } }));
+    // reader
+    const i = this.cur(), w = this.words[i];
+    const L = w.replace(/[^A-Za-z0-9'’-]+$/, '').length;
+    const o = L <= 1 ? 0 : L <= 5 ? 1 : L <= 9 ? 2 : L <= 13 ? 3 : 4;
+    const read = 120080 + (i - this.start), total = 316000, pct = read / total;
+    const left = Math.round((total - read) / S.wpm);
+    const isImg = ov === 'image' && screen === 'reader';
+    const apList = [
+      ['Ghost words either side', ghostOn, () => this.setState({ ghost: !ghostOn })],
+      ['Focus guides', S.guides, () => this.setState({ guides: !S.guides })],
+      ['Show context when paused', S.peek, () => this.setState({ peek: !S.peek })],
+      ['Always show context', S.ctxAlways, () => this.setState({ ctxAlways: !S.ctxAlways })],
+      ['Bionic font', S.bionic, () => this.setState({ bionic: !S.bionic })]
+    ];
+    return {
+      root, nav, books, recent: all.slice(0, 6), countLabel: books.length + ' books',
+      medBg: `oklch(${dark ? 0.38 : 0.46} 0.07 150)`,
+      isHome: screen === 'home', isLibrary: screen === 'library', isCollections: screen === 'collections', isStats: screen === 'stats', isSettings: screen === 'settings', isReader: screen === 'reader',
+      showTabs: screen !== 'reader',
+      goHome: this.go('home'), goLibrary: this.go('library'), goCollections: this.go('collections'), goStats: this.go('stats'), goSettings: this.go('settings'), openReader: this.go('reader'),
+      openSearch: this.setOv('search'), openImport: this.setOv('import'), openPaste: this.setOv('paste'), openDetails: this.setOv('details'), openAppearance: this.setOv('appearance'), closeOverlay: this.setOv('none'),
+      ovSearch: ov === 'search', ovImport: ov === 'import', ovPaste: ov === 'paste', ovImportAny: ov === 'import' || ov === 'paste', ovDetails: ov === 'details',
+      ovAppearance: ov === 'appearance' && screen === 'reader', ovImage: isImg, notImage: !isImg,
+      tabs: { files: ov === 'import' ? 'var(--accent)' : 'transparent', paste: ov === 'paste' ? 'var(--accent)' : 'transparent' },
+      statusChips: ['All', 'Unread', 'In progress', 'Finished'].map(l => { const on = l === S.status; return { label: l, on, bg: on ? 'var(--ink)' : 'transparent', fg: on ? 'var(--bg)' : 'var(--ink)', bd: on ? 'var(--ink)' : 'var(--line-strong)', pick: () => this.setState({ status: l }) }; }),
+      shelves: [
+        { name: 'Fiction', count: 6, note: '2 in progress · last read today', color: 'oklch(0.5 0.08 20)', covers: [spine('Middlemarch', 25, 30, 98), spine('Moby-Dick', 235, 26, 88), spine('Frankenstein', 310, 22, 82), spine('Dracula', 10, 24, 94), spine('Pride and Prejudice', 345, 26, 96), spine('The Odyssey', 195, 28, 86)] },
+        { name: 'Work', count: 2, note: '1 in progress · last read Oct 6', color: 'oklch(0.5 0.08 250)', covers: [spine('Q3 Planning Notes', 260, 28, 92), spine('Meditations', 150, 24, 80)] },
+        { name: 'To read', count: 4, note: 'Nothing started yet this month', color: 'oklch(0.5 0.08 140)', covers: [spine('Frankenstein', 310, 22, 82), spine('Dracula', 10, 24, 94), spine('Walden', 110, 22, 80), spine('The Odyssey', 195, 28, 86)] }
+      ],
+      smart: [['Recently added', 'Added in the last 14 days', 3], ['In progress', 'Started and not finished', 6], ['Finished', 'Read to the last word', 2]].map(([name, note, n], k) => ({ name, note, n, bt: k ? 'var(--line)' : 'transparent' })),
+      rangeSeg: this.seg(['Week', 'Month', 'Year', 'All'], S.range, 'range'),
+      days: mins.map((m, k) => ({ m: k === 13 ? m : '', l: dl[k], h: (m / 64 * 100) + '%', bg: k === 13 ? 'var(--accent)' : k >= 7 ? 'color-mix(in oklch, var(--accent) 45%, var(--surface))' : 'var(--line-strong)' })),
+      byBook: [['Middlemarch', '2 h 06 m', 126], ['Moby-Dick', '1 h 22 m', 82], ['Q3 Planning Notes', '41 m', 41], ['Walden', '30 m', 30]].map(([t, time, m], k) => ({ t, time, w: (m / 126 * 100) + '%', bg: k === 0 ? 'var(--accent)' : 'color-mix(in oklch, var(--accent) 45%, var(--surface))' })),
+      wpfSeg: this.seg(['1', '2', '3'], S.wpf, 'wpf'), hideSeg: this.seg(['After 2 s', 'Never'], S.hide, 'hide'),
+      toggles: [
+        ['Pause on punctuation', 'Commas, full stops and paragraph breaks', 'punct'],
+        ['Slow down for long words', 'Words over eight letters stay a little longer', 'long'],
+        ['Pause at images', 'Stops on figures until you tap Continue', 'img'],
+        ['Ease into speed', 'Reach full speed over ten seconds', 'ramp']
+      ].map(([label, note, k]) => ({ label, note, ...this.sw(S.tg[k], flipTg(k)) })),
+      moreRows: [['Appearance', ''], ['Library & files', ''], ['Account & sync', 'Soon'], ['About', '']].map(([label, meta], k) => ({ label, meta, bt: k ? 'var(--line)' : 'transparent' })),
+      w: { focal: w[o], ...this.bio(w, o),
+        prev: ghostOn ? this.words.slice(Math.max(0, i - 1), i).join(' ') : '',
+        next: ghostOn ? this.words.slice(i + 1, i + 2).join(' ') : '' },
+      stats: { top: `${Math.round(pct * 100)}% · ${Math.floor(left / 60)} h ${left % 60} m left`, short: `${read.toLocaleString('en-US')} / 316,000` },
+      pctStr: (pct * 100).toFixed(2) + '%',
+      peekWords: this.words.map((x, j) => ({ ...this.bioCtx(x), bg: j === i ? 'var(--mark)' : 'transparent', sh: j === i ? 'inset 0 -2px 0 var(--focal)' : 'none', jump: (e) => { this.stop(e); this.seek(j); } })),
+      showPeek: (S.ctxAlways || (!S.playing && S.peek)) && !isImg,
+      showTapHint: !S.playing && !S.peek && !S.ctxAlways,
+      playing: S.playing, paused: !S.playing, playLabel: S.playing ? 'Pause' : 'Play',
+      chrome: S.playing ? S.chrome : 1, wpm: S.wpm,
+      stageTap: () => { if (S.playing && !S.chrome) { this.setState({ chrome: 1 }); this.hideSoon(); return; } this.toggle(); },
+      stopProp: (e) => e.stopPropagation(),
+      togglePlay: this.toggle, prevWord: () => this.seek(this.cur() - 1), nextWord: () => this.seek(this.cur() + 1),
+      prevSentence: this.prevSentence, nextSentence: this.nextSentence,
+      slower: () => this.setWpm(S.wpm - 25), faster: () => this.setWpm(S.wpm + 25),
+      preset250: () => this.setWpm(250), preset400: () => this.setWpm(400), preset600: () => this.setWpm(600),
+      continueImg: this.continueImg, skipImages: (e) => { this.stop(e); this.setState(s => ({ tg: { ...s.tg, img: false }, overlay: 'none', idx: 0 }), this.play); },
+      onKey: this.onKey, onMove: this.onMove,
+      rsize: S.rsize, guideOp: S.guides ? 0.55 : 0, sizePct: ((S.rsize - 32) / 28 * 100) + '%',
+      smaller: () => this.setState({ rsize: Math.max(32, S.rsize - 2) }), bigger: () => this.setState({ rsize: Math.min(60, S.rsize + 2) }),
+      faces: ['Literata', 'Newsreader', 'Sans'].map(f => ({ label: f, ff: faceFF[f], bd: f === S.face ? '2px solid var(--accent)' : '1px solid var(--line-strong)', bg: f === S.face ? 'var(--bg)' : 'transparent', pick: () => this.setState({ face: f }) })),
+      swatches: ['#a83b22', '#2f6a3f', '#24407a', '#9a4f08', '#2b2118'].map(c => ({ c, ring: c === curFocal ? 'var(--ink)' : 'transparent', pick: () => this.setState({ focal: c }) })),
+      apRows: apList.map(([label, on, flip], k) => ({ label, ...this.sw(on, flip), bb: k === apList.length - 1 ? 'transparent' : 'var(--line)' }))
+    };
+  }
+}
+</script>
+</body>
+</html>
