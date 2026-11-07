@@ -12,9 +12,12 @@
   "app": {
     "windows": [
       {
-        "title": "readable",
-        "width": 800,
-        "height": 600
+        "title": "Readable",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 360,
+        "minHeight": 560,
+        "dragDropEnabled": false
       }
     ],
     "security": {

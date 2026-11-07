@@ -1,0 +1,113 @@
+/* Design tokens — see design/handoff/README.md "Design tokens".
+   Palette + theme are applied via data attributes on <html>:
+   data-palette="sepia|moss"  data-theme="light|dark" */
+
+:root {
+  --display: 'Newsreader Variable', Georgia, serif;
+  --ui: 'Newsreader Variable', Georgia, serif;
+  --reader: 'Literata Variable', Georgia, serif;
+
+  --scrim: rgba(28, 20, 12, 0.34);
+  --scrim-search: rgba(28, 20, 12, 0.28);
+  --shadow-modal: 0 24px 60px rgba(0, 0, 0, 0.24);
+  --shadow-popover: 0 16px 44px rgba(0, 0, 0, 0.2);
+  --shadow-drawer: -16px 0 40px rgba(0, 0, 0, 0.16);
+  --cover-ink: #f6efe2;
+  --cover-line: rgba(246, 239, 226, 0.42);
+  --cover-l: 0.46; /* lightness of generated covers */
+
+  --shadow: 0 1px 2px rgba(60, 40, 20, 0.08), 0 8px 24px rgba(60, 40, 20, 0.06);
+  --book-shadow: 0 1px 2px rgba(60, 40, 20, 0.2), 0 6px 14px rgba(60, 40, 20, 0.16);
+}
+
+/* ---------- 1a Sepia ---------- */
+:root,
+:root[data-palette='sepia'][data-theme='light'] {
+  --bg: #f4ede0;
+  --surface: #fbf7ef;
+  --sidebar: #ece3d2;
+  --chip: #e6dbc7;
+  --ink: #2b2118;
+  --muted: #6b5a48;
+  --ghost: rgba(43, 33, 24, 0.24);
+  --line: rgba(60, 40, 20, 0.12);
+  --line-strong: rgba(60, 40, 20, 0.24);
+  --accent: #9e3d27;
+  --on-accent: #fbf7ef;
+  --accent-text: #9e3d27;
+  --focal: #a83b22;
+  --mark: rgba(168, 59, 34, 0.12);
+  --focus: #2b2118;
+  --stripe: rgba(60, 40, 20, 0.08);
+  --hero-cover: oklch(0.46 0.08 25);
+  color-scheme: light;
+}
+
+:root[data-palette='sepia'][data-theme='dark'] {
+  --bg: #1c1813;
+  --surface: #25201a;
+  --sidebar: #16130f;
+  --chip: #2e2820;
+  --ink: #ede4d3;
+  --muted: #a99b87;
+  --ghost: rgba(237, 228, 211, 0.22);
+  --line: rgba(237, 228, 211, 0.1);
+  --line-strong: rgba(237, 228, 211, 0.22);
+  --accent: #e0906f;
+  --on-accent: #1c1813;
+  --accent-text: #e0906f;
+  --focal: #f0a07c;
+  --mark: rgba(240, 160, 124, 0.18);
+  --focus: #f3dcc0;
+  --stripe: rgba(237, 228, 211, 0.07);
+  --hero-cover: oklch(0.4 0.07 25);
+}
+
+/* ---------- 2a Moss ---------- */
+:root[data-palette='moss'][data-theme='light'] {
+  --bg: #f1efe4;
+  --surface: #f9f8f1;
+  --sidebar: #e7e5d6;
+  --chip: #dedcc9;
+  --ink: #22261c;
+  --muted: #5c6150;
+  --ghost: rgba(34, 38, 28, 0.24);
+  --line: rgba(40, 50, 30, 0.12);
+  --line-strong: rgba(40, 50, 30, 0.24);
+  --accent: #3d6838;
+  --on-accent: #f9f8f1;
+  --accent-text: #3d6838;
+  --focal: #2f6a3f;
+  --mark: rgba(47, 106, 63, 0.13);
+  --focus: #22261c;
+  --stripe: rgba(40, 50, 30, 0.08);
+  --hero-cover: oklch(0.42 0.06 145);
+}
+
+:root[data-palette='moss'][data-theme='dark'] {
+  --bg: #171a14;
+  --surface: #1f231b;
+  --sidebar: #121510;
+  --chip: #2a2f24;
+  --ink: #e6e8d8;
+  --muted: #a3a891;
+  --ghost: rgba(230, 232, 216, 0.22);
+  --line: rgba(230, 232, 216, 0.1);
+  --line-strong: rgba(230, 232, 216, 0.22);
+  --accent: #9cc48a;
+  --on-accent: #171a14;
+  --accent-text: #9cc48a;
+  --focal: #a8d094;
+  --mark: rgba(168, 208, 148, 0.18);
+  --focus: #e6e8d8;
+  --stripe: rgba(230, 232, 216, 0.07);
+  --hero-cover: oklch(0.38 0.06 145);
+}
+
+/* Shared dark-mode values (shadows inherit across palettes) */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --book-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 14px rgba(0, 0, 0, 0.35);
+  --cover-l: 0.38;
+}

@@ -1,180 +1,155 @@
-﻿import { TextToken } from '../types';
+// Narration via the Web Speech API, kept in sync with the RSVP engine.
+// Speaks one sentence-sized chunk at a time (Chrome cuts long utterances short) and
+// reports progress word by word from `boundary` events. Voices that don't emit
+// boundary events fall back to an estimated per-word timer within each chunk.
 
-export interface TTSSettings {
-  rate: number; // 0.5 - 2.0
-  pitch: number; // 0.5 - 2.0
-  volume: number; // 0 - 1
-  voice?: SpeechSynthesisVoice;
-  enabled: boolean;
+export const ttsSupported =
+  typeof window !== 'undefined' &&
+  'speechSynthesis' in window &&
+  typeof window.SpeechSynthesisUtterance !== 'undefined';
+
+/** Speech rate for a reading speed: ~180 wpm is a natural 1.0. */
+export function rateForWpm(wpm: number): number {
+  return Math.max(0.5, Math.min(2, wpm / 180));
 }
 
-export class TextToSpeechManager {
-  private synth: SpeechSynthesis;
-  private settings: TTSSettings;
-  // Track current utterance for potential future use
-  private isPlaying: boolean = false;
-  private isPaused: boolean = false;
+export interface NarrationCallbacks {
+  /** The voice reached word `index` */
+  onWord: (index: number) => void;
+  /** Reached the end of the text */
+  onEnd: () => void;
+  /** Speech failed (no voices, blocked, …) */
+  onError?: () => void;
+}
 
-  constructor(settings: Partial<TTSSettings> = {}) {
-    this.synth = window.speechSynthesis;
-    this.settings = {
-      rate: settings.rate ?? 1,
-      pitch: settings.pitch ?? 1,
-      volume: settings.volume ?? 1,
-      enabled: settings.enabled ?? false,
-      voice: settings.voice,
-    };
+export interface NarratorOptions {
+  words: string[];
+  /** Exclusive end index of the chunk that starts at `i` (sentence end / paragraph break) */
+  chunkEnd: (i: number) => number;
+  lang?: string;
+}
+
+const MAX_CHUNK = 60;
+/** If no boundary event arrives this long after start, estimate word timing instead. */
+const BOUNDARY_GRACE_MS = 700;
+
+export class Narrator {
+  private gen = 0;
+  private fallbackTimer: ReturnType<typeof setInterval> | null = null;
+  private graceTimer: ReturnType<typeof setTimeout> | null = null;
+  /** Keep a reference: Chrome garbage-collects utterances mid-speech otherwise. */
+  private current: SpeechSynthesisUtterance | null = null;
+  /** The utterance being spoken (for debugging / GC pinning) */
+  get speaking() {
+    return this.current;
   }
+  private rate = 1;
+  private cb: NarrationCallbacks | null = null;
 
-  /**
-   * Get available voices
-   */
-  getAvailableVoices(): SpeechSynthesisVoice[] {
-    return this.synth.getVoices();
-  }
+  constructor(private opts: NarratorOptions) {}
 
-  /**
-   * Set TTS settings
-   */
-  setSettings(newSettings: Partial<TTSSettings>) {
-    this.settings = { ...this.settings, ...newSettings };
-
-    // If currently playing, cancel and restart with new settings
-    if (this.isPlaying) {
-      this.stop();
+  start(index: number, rate: number, cb: NarrationCallbacks) {
+    if (!ttsSupported) {
+      cb.onError?.();
+      return;
     }
+    this.stop();
+    this.rate = rate;
+    this.cb = cb;
+    this.speakFrom(index, ++this.gen);
   }
 
-  /**
-   * Speak the given word
-   */
-  speak(token: TextToken) {
-    if (!this.settings.enabled) return;
-
-    // Cancel any ongoing speech
-    this.synth.cancel();
-
-    const utterance = new SpeechSynthesisUtterance(token.word);
-    utterance.rate = this.settings.rate;
-    utterance.pitch = this.settings.pitch;
-    utterance.volume = this.settings.volume;
-
-    if (this.settings.voice) {
-      utterance.voice = this.settings.voice;
-    }
-
-    utterance.onstart = () => {
-      this.isPlaying = true;
-    };
-
-    utterance.onend = () => {
-      this.isPlaying = false;
-    };
-
-    utterance.onerror = (event) => {
-      console.error('TTS error:', event.error);
-      this.isPlaying = false;
-    };
-
-    // utterance tracking
-    this.synth.speak(utterance);
-  }
-
-  /**
-   * Speak a full sentence or paragraph
-   */
-  speakText(text: string) {
-    if (!this.settings.enabled) return;
-
-    this.synth.cancel();
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = this.settings.rate;
-    utterance.pitch = this.settings.pitch;
-    utterance.volume = this.settings.volume;
-
-    if (this.settings.voice) {
-      utterance.voice = this.settings.voice;
-    }
-
-    utterance.onstart = () => {
-      this.isPlaying = true;
-    };
-
-    utterance.onend = () => {
-      this.isPlaying = false;
-    };
-
-    // utterance tracking
-    this.synth.speak(utterance);
-  }
-
-  /**
-   * Pause speech
-   */
-  pause() {
-    if (this.synth.speaking && !this.isPaused) {
-      this.synth.pause();
-      this.isPaused = true;
-    }
-  }
-
-  /**
-   * Resume paused speech
-   */
-  resume() {
-    if (this.isPaused) {
-      this.synth.resume();
-      this.isPaused = false;
-    }
-  }
-
-  /**
-   * Stop all speech
-   */
   stop() {
-    this.synth.cancel();
-    this.isPlaying = false;
-    this.isPaused = false;
-    // utterance cleared
+    this.gen++;
+    this.clearTimers();
+    this.current = null;
+    if (ttsSupported) window.speechSynthesis.cancel();
   }
 
-  /**
-   * Check if currently speaking
-   */
-  isCurrentlySpeaking(): boolean {
-    return this.isPlaying;
+  private clearTimers() {
+    if (this.fallbackTimer !== null) clearInterval(this.fallbackTimer);
+    if (this.graceTimer !== null) clearTimeout(this.graceTimer);
+    this.fallbackTimer = null;
+    this.graceTimer = null;
   }
 
-  /**
-   * Check if paused
-   */
-  isCurrentlyPaused(): boolean {
-    return this.isPaused;
-  }
-
-  /**
-   * Enable/disable TTS
-   */
-  setEnabled(enabled: boolean) {
-    this.settings.enabled = enabled;
-    if (!enabled) {
-      this.stop();
+  private speakFrom(start: number, gen: number) {
+    const { words } = this.opts;
+    if (gen !== this.gen || !this.cb) return;
+    if (start >= words.length) {
+      this.cb.onEnd();
+      return;
     }
-  }
+    const end = Math.max(start + 1, Math.min(this.opts.chunkEnd(start), start + MAX_CHUNK, words.length));
 
-  /**
-   * Set voice by index or name
-   */
-  setVoice(voiceOrIndex: SpeechSynthesisVoice | number) {
-    if (typeof voiceOrIndex === 'number') {
-      const voices = this.getAvailableVoices();
-      this.settings.voice = voices[voiceOrIndex];
-    } else {
-      this.settings.voice = voiceOrIndex;
+    // Build text with char offsets for each word
+    const offsets: number[] = [];
+    let text = '';
+    for (let i = start; i < end; i++) {
+      offsets.push(text.length);
+      text += (i > start ? ' ' : '') + words[i];
+      if (i > start) offsets[offsets.length - 1] += 1;
     }
+
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = this.rate;
+    if (this.opts.lang) u.lang = this.opts.lang;
+    this.current = u;
+    let gotBoundary = false;
+    let lastWord = start;
+
+    const report = (i: number) => {
+      if (gen !== this.gen || i <= lastWord) return;
+      lastWord = i;
+      this.cb?.onWord(i);
+    };
+
+    u.onboundary = (e) => {
+      if (gen !== this.gen) return;
+      if (e.name && e.name !== 'word') return;
+      gotBoundary = true;
+      if (this.fallbackTimer !== null) {
+        clearInterval(this.fallbackTimer);
+        this.fallbackTimer = null;
+      }
+      // last offset ≤ charIndex
+      let k = 0;
+      while (k + 1 < offsets.length && offsets[k + 1] <= e.charIndex) k++;
+      report(start + k);
+    };
+
+    u.onstart = () => {
+      if (gen !== this.gen) return;
+      this.graceTimer = setTimeout(() => {
+        if (gen !== this.gen || gotBoundary) return;
+        // Estimate: ~180 wpm × rate, never passing the chunk's last word.
+        const perWord = 60000 / (180 * this.rate);
+        this.fallbackTimer = setInterval(() => {
+          if (gen !== this.gen) return;
+          if (lastWord + 1 < end) report(lastWord + 1);
+        }, perWord);
+      }, BOUNDARY_GRACE_MS);
+    };
+
+    u.onend = () => {
+      if (gen !== this.gen) return;
+      this.clearTimers();
+      if (end >= words.length) {
+        this.cb?.onEnd();
+        return;
+      }
+      this.cb?.onWord(end);
+      // The engine may have paused (e.g. at an image) inside onWord → stop() bumps gen.
+      this.speakFrom(end, gen);
+    };
+
+    u.onerror = (e) => {
+      if (gen !== this.gen) return;
+      if (e.error === 'interrupted' || e.error === 'canceled') return;
+      this.clearTimers();
+      this.cb?.onError?.();
+    };
+
+    window.speechSynthesis.speak(u);
   }
 }
-
-
-

@@ -1,0 +1,411 @@
+/* Stats screen (04). Prefix: st- */
+.st-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  height: 100%;
+  min-height: 600px;
+}
+
+.st-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* KPI strip */
+.st-kpis {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.st-kpi {
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.st-kpi + .st-kpi {
+  border-left: 1px solid var(--line);
+}
+
+.st-kpi-label {
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.st-kpi-value {
+  font-family: var(--display);
+  font-size: 46px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.st-unit {
+  font-size: 22px;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.st-kpi-note {
+  font-size: 15px;
+  font-style: italic;
+  color: var(--muted);
+}
+
+/* Lower grid */
+.st-lower {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: 24px;
+  flex: 1;
+  min-height: 0;
+}
+
+.st-card {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 28px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  min-width: 0;
+  min-height: 0;
+}
+
+.st-card h2 {
+  font-family: var(--display);
+  font-weight: 500;
+  font-style: italic;
+  font-size: 22px;
+}
+
+.st-chart-card {
+  gap: 18px;
+}
+
+.st-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.st-streak {
+  font-size: 15px;
+  color: var(--accent-text);
+}
+
+.st-chart {
+  flex: 1;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.st-bars {
+  flex: 1;
+  display: grid;
+  align-items: end;
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.st-bar-col {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+  outline-offset: 2px;
+}
+
+.st-bar-col:focus-visible {
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+.st-bar {
+  width: 100%;
+  min-height: 2px;
+  border-radius: 3px 3px 0 0;
+  transition: height 0.25s ease;
+}
+
+.st-bar-col:hover .st-bar {
+  filter: brightness(0.94);
+}
+
+.st-bar-value {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.st-tip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  white-space: nowrap;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 13px;
+  pointer-events: none;
+}
+
+.st-tip.left {
+  left: 0;
+  transform: none;
+}
+
+.st-tip.right {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+.st-labels {
+  display: grid;
+}
+
+.st-labels > span {
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.st-empty {
+  font-size: 15px;
+  font-style: italic;
+  color: var(--muted);
+}
+
+/* By book */
+.st-books {
+  gap: 16px;
+  overflow: auto;
+}
+
+.st-books ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.st-books li {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.st-book-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+}
+
+.st-book-title {
+  font-family: var(--display);
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+}
+
+button.st-book-title:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 3px;
+}
+
+.st-book-title.removed {
+  font-style: italic;
+  color: var(--muted);
+}
+
+.st-book-time {
+  font-size: 15px;
+  color: var(--muted);
+  flex: none;
+}
+
+.st-book-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--chip);
+}
+
+.st-book-track > div {
+  height: 100%;
+  border-radius: 3px;
+}
+
+/* ---------- Mobile ---------- */
+.st-mobile {
+  gap: 18px;
+  height: auto;
+  min-height: 0;
+}
+
+.st-mobile .page-title {
+  gap: 10px;
+}
+
+.st-mobile .page-title h1 {
+  font-size: 32px;
+}
+
+.st-mobile .page-title .meta {
+  font-size: 15px;
+}
+
+.st-range-m.segmented {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-radius: 10px;
+}
+
+.st-range-m.segmented > button {
+  height: 36px;
+  border-radius: 8px;
+  padding: 0;
+}
+
+.st-mobile .st-kpis {
+  grid-template-columns: 1fr 1fr;
+  border-radius: 16px;
+}
+
+.st-mobile .st-kpi {
+  padding: 16px 18px;
+  gap: 4px;
+}
+
+.st-mobile .st-kpi-time {
+  grid-column: 1 / -1;
+  padding: 18px 18px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.st-mobile .st-kpi + .st-kpi {
+  border-left: 0;
+}
+
+.st-mobile .st-kpi:last-child {
+  border-left: 1px solid var(--line);
+}
+
+.st-mobile .st-kpi-label {
+  font-size: 12px;
+}
+
+.st-mobile .st-kpi-value {
+  font-size: 28px;
+}
+
+.st-mobile .st-kpi-time .st-kpi-value {
+  font-size: 40px;
+}
+
+.st-mobile .st-unit {
+  font-size: 16px;
+}
+
+.st-mobile .st-kpi-note {
+  font-size: 13px;
+}
+
+.st-mobile .st-kpi-time .st-kpi-note {
+  font-size: 14px;
+}
+
+.st-mobile .st-lower {
+  grid-template-columns: 1fr;
+  gap: 18px;
+  flex: none;
+}
+
+.st-mobile .st-card {
+  padding: 18px;
+  border-radius: 16px;
+}
+
+.st-mobile .st-card h2 {
+  font-size: 20px;
+}
+
+.st-mobile .st-chart-card {
+  gap: 14px;
+}
+
+.st-mobile .st-streak {
+  font-size: 14px;
+}
+
+.st-mobile .st-chart {
+  flex: none;
+  min-height: 0;
+  gap: 6px;
+}
+
+.st-mobile .st-bars {
+  height: 150px;
+  flex: none;
+}
+
+.st-mobile .st-bar-col {
+  gap: 4px;
+}
+
+.st-mobile .st-bar-value,
+.st-mobile .st-labels > span {
+  font-size: 11px;
+}
+
+.st-mobile .st-books {
+  gap: 14px;
+  overflow: visible;
+}
+
+.st-mobile .st-book-title {
+  font-size: 16px;
+}
+
+.st-mobile .st-book-time {
+  font-size: 14px;
+}
+
+.st-mobile .st-books li {
+  gap: 6px;
+}

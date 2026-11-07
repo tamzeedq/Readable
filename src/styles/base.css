@@ -1,0 +1,432 @@
+/* Global reset + shared primitives. Screen-specific styles live next to their components. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--ui);
+  font-size: 16px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-optical-sizing: auto;
+  overflow: hidden;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+dl,
+dd {
+  margin: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--mark);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0s !important;
+    animation-duration: 0s !important;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.italic-meta {
+  font-style: italic;
+  color: var(--muted);
+}
+
+/* ---------- Page title pattern ---------- */
+.page-title {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+
+.page-title h1 {
+  font-family: var(--display);
+  font-size: 36px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+}
+
+.page-title .meta {
+  font-style: italic;
+  font-size: 16px;
+  color: var(--muted);
+}
+
+.eyebrow {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 16px;
+  border-radius: 8px;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--ui);
+  font-size: 15px;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--chip);
+}
+
+.btn-primary {
+  border: 0;
+  padding: 0 18px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 500;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: color-mix(in oklch, var(--accent), var(--ink) 12%);
+}
+
+.btn-lg {
+  height: 44px;
+  padding: 0 20px;
+  font-size: 16px;
+}
+
+.btn-sm {
+  height: 38px;
+  padding: 0 12px;
+  gap: 6px;
+}
+
+.btn-ghost {
+  border-color: transparent;
+}
+
+.btn-text {
+  height: auto;
+  padding: 0 4px;
+  border: 0;
+  color: var(--muted);
+}
+
+.btn-text:hover:not(:disabled) {
+  background: transparent;
+  color: var(--ink);
+}
+
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  transition: background 0.15s, color 0.15s;
+}
+
+.icon-btn:hover:not(:disabled) {
+  background: var(--chip);
+  color: var(--ink);
+}
+
+.icon-btn[aria-pressed='true'] {
+  color: var(--accent-text);
+}
+
+kbd,
+.kbd {
+  font-family: var(--ui);
+  font-size: 12px;
+  padding: 1px 6px;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  color: var(--muted);
+  font-style: normal;
+}
+
+/* ---------- Segmented control ---------- */
+.segmented {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 9px;
+  background: var(--chip);
+  gap: 2px;
+}
+
+.segmented > button {
+  height: 32px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--ui);
+  font-size: 15px;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.segmented > button[aria-checked='true'] {
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+/* ---------- Switch ---------- */
+.switch {
+  width: 46px;
+  height: 28px;
+  padding: 3px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--line-strong);
+  display: flex;
+  justify-content: flex-start;
+  flex: none;
+  transition: background 0.15s;
+}
+
+.switch[aria-checked='true'] {
+  background: var(--accent);
+  justify-content: flex-end;
+}
+
+.switch > span {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+/* ---------- Fields ---------- */
+.field {
+  height: 42px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid var(--line-strong);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--ui);
+  font-size: 15px;
+  width: 100%;
+}
+
+.field:focus {
+  outline: none;
+  border: 2px solid var(--accent);
+  padding: 0 11px;
+}
+
+.field::placeholder {
+  color: var(--muted);
+}
+
+/* ---------- Progress bar ---------- */
+.progress {
+  height: 3px;
+  border-radius: 2px;
+  background: var(--line-strong);
+  overflow: hidden;
+}
+
+.progress > span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: inherit;
+}
+
+/* ---------- Chips ---------- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 16px;
+  background: var(--chip);
+  border: 0;
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.chip-outline {
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  font-style: italic;
+}
+
+.chip-dashed {
+  background: transparent;
+  border: 1px dashed var(--line-strong);
+  color: var(--muted);
+}
+
+.badge {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  padding: 1px 5px;
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+/* ---------- Overlays ---------- */
+.scrim {
+  position: fixed;
+  inset: 0;
+  background: var(--scrim);
+  z-index: 50;
+}
+
+.scrim.light {
+  background: rgba(28, 20, 12, 0.2);
+}
+
+.modal {
+  position: fixed;
+  z-index: 51;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(640px, calc(100vw - 32px));
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow-modal);
+}
+
+.drawer {
+  position: fixed;
+  z-index: 51;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(452px, 100vw);
+  background: var(--surface);
+  border-left: 1px solid var(--line);
+  box-shadow: var(--shadow-drawer);
+  display: flex;
+  flex-direction: column;
+}
+
+.sheet {
+  position: fixed;
+  z-index: 51;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: calc(100% - 64px);
+  background: var(--surface);
+  border-radius: 20px 20px 0 0;
+  box-shadow: var(--shadow-modal);
+  display: flex;
+  flex-direction: column;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.sheet-grabber {
+  width: 36px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--line-strong);
+  margin: 8px auto 4px;
+  flex: none;
+}
+
+/* Scrollbars that sit quietly on paper */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}

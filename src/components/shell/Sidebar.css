@@ -1,0 +1,219 @@
+.sidebar {
+  width: 236px;
+  flex: none;
+  height: 100%;
+  background: var(--sidebar);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 22px 14px 14px;
+  min-height: 0;
+}
+
+.sidebar-collapsed {
+  width: 64px;
+  align-items: center;
+  gap: 14px;
+  padding: 22px 0 14px;
+}
+
+.sidebar-collapsed .sidebar-nav {
+  align-items: center;
+}
+
+.sidebar-collapsed .icon-btn {
+  width: 40px;
+  height: 40px;
+  color: var(--ink);
+}
+
+.sidebar-collapsed .icon-btn[data-active='true'] {
+  background: var(--chip);
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px 0 10px;
+}
+
+.wordmark {
+  font-family: var(--display);
+  font-size: 25px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.sidebar-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 15px;
+  flex: none;
+}
+
+.sidebar-search > span {
+  flex: 1;
+  text-align: left;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 38px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 16px;
+  text-decoration: none;
+  color: var(--ink);
+  transition: background 0.15s;
+}
+
+.nav-item:hover {
+  background: color-mix(in oklch, var(--chip) 60%, transparent);
+}
+
+.nav-item[aria-current='page'] {
+  background: var(--chip);
+}
+
+.sidebar-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  overflow-y: auto;
+  min-height: 0;
+  margin: 0 -4px;
+  padding: 0 4px;
+}
+
+.sidebar-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px 4px 10px;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--muted);
+  min-height: 28px;
+}
+
+.icon-btn-sm {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+}
+
+.sidebar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 34px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 15px;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.sidebar-row:hover {
+  background: color-mix(in oklch, var(--chip) 60%, transparent);
+}
+
+.sidebar-row[aria-current='page'] {
+  background: var(--chip);
+}
+
+.shelf-tab {
+  width: 8px;
+  height: 12px;
+  border-radius: 1px;
+  flex: none;
+  margin: 0 4px;
+}
+
+.row-icon {
+  color: var(--muted);
+  flex: none;
+}
+
+.row-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.row-count {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--line);
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.sidebar-footer > span:first-of-type {
+  flex: 1;
+}
+
+.soon {
+  font-style: italic;
+  font-size: 12px;
+}
+
+/* ---------- Mobile tab bar ---------- */
+.tabbar {
+  flex: none;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  background: var(--sidebar);
+  border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.tabbar button {
+  height: 56px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-size: 11px;
+}
+
+.tabbar button[aria-current='page'] {
+  color: var(--accent-text);
+}

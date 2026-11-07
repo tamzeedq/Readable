@@ -1,0 +1,450 @@
+/* 01 Home (prefix home-) */
+.screen.home {
+  padding: 36px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.home-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.home-date {
+  font-size: 15px;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.home-greeting {
+  margin-top: 2px;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 38px;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+}
+
+.home-header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.home-eyebrow {
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-text);
+}
+
+/* ---------- Continue reading hero ---------- */
+.home-hero {
+  display: grid;
+  grid-template-columns: 156px minmax(0, 1fr) auto;
+  gap: 36px;
+  align-items: center;
+  padding: 30px 36px 30px 30px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.home-hero-main {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.home-hero-title {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 42px;
+  letter-spacing: -0.015em;
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+}
+
+.home-hero-author {
+  font-size: 18px;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.home-hero-resume {
+  margin-top: 14px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.home-snippet {
+  font-style: italic;
+}
+
+.home-hero-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.home-btn-secondary {
+  padding: 0 18px;
+}
+
+.home-hero-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding-left: 36px;
+  border-left: 1px solid var(--line);
+}
+
+.home-ring {
+  position: relative;
+  width: 112px;
+  height: 112px;
+}
+
+.home-ring svg {
+  display: block;
+}
+
+.home-ring-label {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--display);
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.home-hero-left {
+  text-align: center;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+.home-hero-wpm {
+  font-size: 14px;
+}
+
+@media (max-width: 1040px) {
+  .home-hero {
+    grid-template-columns: 156px minmax(0, 1fr);
+    padding: 26px;
+    gap: 28px;
+  }
+  .home-hero-side {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 20px;
+    padding: 20px 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+  .home-hero-left {
+    text-align: left;
+  }
+}
+
+/* ---------- All caught up ---------- */
+.home-caught-up {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding: 28px 32px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.home-caught-up h2 {
+  margin: 6px 0 4px;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 28px;
+  letter-spacing: -0.01em;
+}
+
+.home-caught-up p {
+  font-size: 16px;
+}
+
+.home-caught-up-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* ---------- Recently read ---------- */
+.home-recent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.home-recent-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.home-recent-head h2 {
+  font-family: var(--display);
+  font-weight: 500;
+  font-style: italic;
+  font-size: 24px;
+}
+
+.home-link {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 15px;
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.home-link:hover {
+  color: var(--ink);
+}
+
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 24px;
+}
+
+.home-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.home-tile .cover {
+  transition: transform 0.15s;
+}
+
+.home-tile:hover .cover {
+  transform: translateY(-2px);
+}
+
+.home-tile-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.home-tile-title {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.home-tile-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.home-tile-status .progress {
+  flex: 1;
+}
+
+.home-tile-status span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ---------- Mobile ---------- */
+.screen.home-m {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.home-m-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.home-m-greeting {
+  margin-top: 2px;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 32px;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+}
+
+.home-round-btn {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 22px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+
+.home-m-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+
+.home-m-card-top {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+}
+
+.home-m-card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.home-m-card .home-eyebrow {
+  font-size: 12px;
+}
+
+.home-m-title {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 28px;
+  letter-spacing: -0.015em;
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+}
+
+.home-m-author {
+  font-size: 16px;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.home-m-chapter {
+  margin-top: 6px;
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.home-m-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.home-m-progress-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.home-m-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.btn.home-m-btn {
+  height: 50px;
+  border-radius: 10px;
+  font-size: 16px;
+}
+
+.home-m-actions .btn-primary.home-m-btn {
+  font-size: 17px;
+}
+
+.home-m-add {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.home-m-add .home-m-btn {
+  height: 48px;
+}
+
+.home-m .home-recent {
+  gap: 14px;
+}
+
+.home-m .home-recent-head h2 {
+  font-size: 22px;
+}
+
+.home-m .home-link {
+  min-height: 44px;
+}
+
+.home-m-scroller {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  margin: 0 -20px;
+  padding: 0 20px 4px;
+  scrollbar-width: none;
+}
+
+.home-m-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.home-m-scroller .home-tile {
+  width: 100px;
+  flex: none;
+  gap: 8px;
+}
+
+.home-m-scroller .home-tile-text {
+  gap: 4px;
+}
+
+.home-m-scroller .home-tile-title {
+  font-size: 14px;
+}
+
+.home-m-scroller .home-tile-status {
+  gap: 6px;
+}
+
+.home-m-scroller .home-tile-status span {
+  font-size: 11px;
+}
