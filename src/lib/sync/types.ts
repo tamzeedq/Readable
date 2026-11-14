@@ -10,6 +10,11 @@ export interface SyncStamp {
   updatedAt: string;
   /** Local tombstone: the entity was deleted on this device */
   deleted?: boolean;
+  /**
+   * Set when a local edit is recorded; cleared once it has been pushed. This — not any clock — decides
+   * what gets pushed. A stamp without the flag counts as already synced.
+   */
+  pending?: boolean;
 }
 
 /**

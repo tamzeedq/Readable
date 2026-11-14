@@ -35,6 +35,8 @@ export interface RunnerDeps {
   syncOnce: (local: LocalSnapshot, cursor: string | null) => Promise<SyncResult>;
   files: {
     upload(args: { bookId: string; data: Blob; contentHash: string }): Promise<{ storagePath: string }>;
+    /** Remove a deleted book's cloud file (kept if another live book shares it) */
+    remove(storagePath: string, bookId: string): Promise<unknown>;
     download(storagePath: string): Promise<Blob>;
   };
   content: {
@@ -65,11 +67,12 @@ const isNetworkError = (e: unknown) => {
 export function mergeAfterSync(current: SyncStoreState, start: SyncStamps, result: LocalSnapshot, userId: string): LocalSnapshot {
   const cur = normalizeSnapshot({ ...current, bookFiles: result.bookFiles });
   const startStamps = normalizeSnapshot({ ...current, stamps: start }).stamps;
-  const changed = new Set(Object.keys(cur.stamps).filter((k) => cur.stamps[k]?.updatedAt !== startStamps[k]?.updatedAt));
+  // Stamps are replaced (never mutated) on every edit, so a different reference means an edit during the sync
+  const changed = new Set(Object.keys(cur.stamps).filter((k) => cur.stamps[k] !== startStamps[k]));
   if (!changed.size) return result;
-  const local = flattenLocal(cur, userId, null);
+  const local = flattenLocal(cur, userId);
   for (const l of local) if (changed.has(l.key)) l.at = Number.MAX_SAFE_INTEGER;
-  const remote = flattenLocal(result, userId, null);
+  const remote = flattenLocal(result, userId);
   const { final } = resolve(local, remote);
   const merged = buildSnapshot(final, cur);
   for (const k of changed) merged.stamps[k] = cur.stamps[k];
@@ -128,7 +131,18 @@ export function createSyncRunner(deps: RunnerDeps) {
     if (s0.syncUserId !== userId) deps.store.apply({ syncUserId: userId, syncCursor: null, bookFiles: {} });
 
     const start = { ...deps.store.get() }; // frozen view: adapters may return a live object
+    // Books whose deletion is about to be pushed: their cloud files go once the tombstone is up
+    const deletedFiles = Object.entries(start.stamps)
+      .filter(([k, st]) => k.startsWith('book:') && st.deleted && st.pending)
+      .flatMap(([k]) => {
+        const id = k.slice(5);
+        const path = start.bookFiles[id]?.storagePath;
+        return path ? [{ id, path }] : [];
+      });
     const result = await deps.syncOnce(start, start.syncCursor);
+    for (const { id, path } of deletedFiles) {
+      await deps.files.remove(path, id).catch((e) => console.error('Could not remove cloud file', id, e));
+    }
 
     const before = new Set(deps.store.get().books.map((b) => b.id));
     const merged = mergeAfterSync(deps.store.get(), start.stamps, result.snapshot, userId);

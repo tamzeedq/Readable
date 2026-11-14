@@ -87,7 +87,7 @@ function rowsByTable(t: SyncTable, rows: Tables<SyncTable>[]) {
 /**
  * One pull → resolve (last-write-wins by updated_at, tombstones honoured) → push round.
  * `lastSyncedAt` is the cursor returned by the previous call (null = first sync).
- * Local changes are detected via `snapshot.stamps` (updatedAt newer than the cursor).
+ * Local changes are detected via `snapshot.stamps` (`pending` flag, or no stamp); the cursor only limits the pull.
  * Non-UUID local ids (e.g. default shelves) are rewritten to stable UUIDs in the returned snapshot.
  */
 export async function syncOnce(client: SyncClient, local: LocalSnapshot, lastSyncedAt: string | null): Promise<SyncResult> {
@@ -98,7 +98,7 @@ export async function syncOnce(client: SyncClient, local: LocalSnapshot, lastSyn
   for (const t of TABLES) pulled[t] = await pullTable(client, t, lastSyncedAt);
   const remote = flattenRemote({ ...pulled, profiles: [] } as unknown as Parameters<typeof flattenRemote>[0]);
 
-  const { final, push } = resolve(flattenLocal(snap, userId, lastSyncedAt), remote);
+  const { final, push } = resolve(flattenLocal(snap, userId), remote);
 
   let cursor = lastSyncedAt;
   for (const r of remote) {

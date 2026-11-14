@@ -27,10 +27,10 @@ describe('stampChanges', () => {
     const moved = stampChanges(prev, { ...prev, books: [{ ...b, progressWordIndex: 9, lastReadAt: 1 }] }, {}, T);
     expect(Object.keys(moved)).toEqual(['progress:b1']);
     const trimmed = stampChanges(prev, { ...prev, books: [{ ...b, shelves: [], bookmarks: [] }] }, {}, T);
-    expect(trimmed['bookshelf:b1:s1']).toEqual({ updatedAt: T, deleted: true });
-    expect(trimmed['bookmark:b1:3']).toEqual({ updatedAt: T, deleted: true });
+    expect(trimmed['bookshelf:b1:s1']).toEqual({ updatedAt: T, deleted: true, pending: true });
+    expect(trimmed['bookmark:b1:3']).toEqual({ updatedAt: T, deleted: true, pending: true });
     const gone = stampChanges(prev, { ...prev, books: [] }, {}, T);
-    expect(gone['book:b1']).toEqual({ updatedAt: T, deleted: true });
+    expect(gone['book:b1']).toEqual({ updatedAt: T, deleted: true, pending: true });
   });
 
   it('stamps shelves, prefs and reading sessions', () => {
@@ -42,8 +42,8 @@ describe('stampChanges', () => {
       T,
     );
     expect(out['shelf:x']?.deleted).toBe(true);
-    expect(out['shelf:y']).toEqual({ updatedAt: T });
-    expect(out.prefs).toEqual({ updatedAt: T });
-    expect(out['session:b1:2026-01-01']).toEqual({ updatedAt: T });
+    expect(out['shelf:y']).toEqual({ updatedAt: T, pending: true });
+    expect(out.prefs).toEqual({ updatedAt: T, pending: true });
+    expect(out['session:b1:2026-01-01']).toEqual({ updatedAt: T, pending: true });
   });
 });

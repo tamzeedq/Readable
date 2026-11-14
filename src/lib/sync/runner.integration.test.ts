@@ -8,7 +8,7 @@ import type { Database } from '../../types/supabase';
 import type { BookContent } from '../../types';
 import type { SyncClient } from './engine';
 import { syncOnce } from './engine';
-import { downloadBookFile, uploadBookFile } from './files';
+import { deleteBookFile, downloadBookFile, uploadBookFile } from './files';
 import { stampChanges, type StampSlice } from './stamps';
 import { createStatusStore, createSyncRunner, type SyncStoreState } from './runner';
 import { emptySnapshot, makeBook } from './testUtils';
@@ -49,6 +49,7 @@ describe.skipIf(!enabled)('sync runner against Supabase (two devices, one user)'
       files: {
         upload: ({ bookId, data, contentHash }) => uploadBookFile(client, { bookId, data, contentHash, contentType: 'application/zip' }),
         download: (p) => downloadBookFile(client, p),
+        remove: (p, id) => deleteBookFile(client, p, id),
       },
       content: {
         load: async (id) => contents.get(id),

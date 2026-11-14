@@ -23,7 +23,7 @@ function makeCloud() {
     const snap = normalizeSnapshot(local);
     const cursorMs = cursor ? Date.parse(cursor) : null;
     const pulled = [...remote.values()].filter((r) => cursorMs === null || r.at > cursorMs);
-    const { final, push } = resolve(flattenLocal(snap, USER, cursor), pulled);
+    const { final, push } = resolve(flattenLocal(snap, USER), pulled);
     let newCursor = cursor;
     for (const r of pulled) if (!newCursor || r.at > Date.parse(newCursor)) newCursor = iso(r.at);
     for (const p of push) {
@@ -45,18 +45,22 @@ function makeCloud() {
       remote.set(rec.key, { ...rec, at, row: { ...rec.row, content_hash: contentHash, storage_path: storagePath, updated_at: iso(at) } });
       return { storagePath };
     },
+    async remove(path: string) {
+      return storage.delete(path);
+    },
     async download(path: string) {
       const b = storage.get(path);
       if (!b) throw new Error('missing object');
       return b;
     },
   };
-  return { syncOnce, files, tick, iso, calls: () => calls };
+  return { syncOnce, files, tick, iso, calls: () => calls, storage };
 }
 
 type Cloud = ReturnType<typeof makeCloud>;
 
-function makeDevice(cloud: Cloud) {
+/** `skewMs` shifts this device's clock (negative = behind the server) */
+function makeDevice(cloud: Cloud, skewMs = 0) {
   const state: SyncStoreState = { ...emptySnapshot(), syncCursor: null, syncUserId: null };
   const contents = new Map<string, BookContent>();
   const slice = (): StampSlice => ({
@@ -67,7 +71,7 @@ function makeDevice(cloud: Cloud) {
   const edit = (fn: () => void) => {
     const prev = slice();
     fn();
-    state.stamps = stampChanges(prev, slice(), state.stamps, cloud.iso(cloud.tick()));
+    state.stamps = stampChanges(prev, slice(), state.stamps, cloud.iso(cloud.tick() + skewMs));
   };
   const adapter: SyncStoreAdapter = {
     get: () => state,
@@ -129,6 +133,27 @@ describe('two-device sync', () => {
     await A.runner.syncNow();
     expect(A.state.books.find((b) => b.id === BOOK_ID)).toBeUndefined();
     expect(A.contents.has(BOOK_ID)).toBe(false);
+    expect(cloud.storage.size).toBe(0); // the deleted book's cloud file was removed
+  });
+
+  it('pushes edits from a device whose clock is 10 minutes behind the server', async () => {
+    const cloud = makeCloud();
+    const A = makeDevice(cloud, -10 * 60_000);
+    const B = makeDevice(cloud);
+    A.addBook(makeBook(BOOK_ID, { wordCount: 3 }), content(BOOK_ID));
+    await A.runner.start();
+    await B.runner.start();
+    await A.runner.syncNow(); // A's cursor is now ahead of A's own clock
+
+    // Edit after the sync: stamp (device clock) is older than the cursor (server clock)
+    A.edit(() => (A.state.books = A.state.books.map((b) => ({ ...b, bookmarks: [2], progressWordIndex: 1, lastReadAt: 1 }))));
+    expect(Date.parse(A.state.stamps['bookmark:' + BOOK_ID + ':2'].updatedAt)).toBeLessThan(Date.parse(A.state.syncCursor!));
+    await A.runner.syncNow();
+    expect(A.state.stamps['bookmark:' + BOOK_ID + ':2'].pending).toBeFalsy();
+
+    await B.runner.syncNow();
+    expect(B.state.books[0].bookmarks).toEqual([2]);
+    expect(B.state.books[0].progressWordIndex).toBe(1);
   });
 
   it('keeps edits made while a sync is in flight', async () => {

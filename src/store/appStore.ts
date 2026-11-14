@@ -126,8 +126,14 @@ export interface AppState {
  */
 export function migratePersisted(persisted: unknown, version: number): unknown {
   const p = (persisted ?? {}) as Record<string, unknown>;
-  if (version < 2) return { ...p, stamps: {}, bookFiles: {}, syncCursor: null, syncUserId: null };
-  return p;
+  let out = p;
+  if (version < 2) out = { ...out, stamps: {}, bookFiles: {}, syncCursor: null, syncUserId: null };
+  if (version < 3) {
+    // Stamps from before dirtiness was tracked locally: treat every one as not yet pushed
+    const stamps = (out.stamps ?? {}) as SyncStamps;
+    out = { ...out, stamps: Object.fromEntries(Object.entries(stamps).map(([k, v]) => [k, { ...v, pending: true }])) };
+  }
+  return out;
 }
 
 let applyingSync = false;
@@ -279,7 +285,7 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'readable-v1',
-      version: 2,
+      version: 3,
       migrate: migratePersisted,
       partialize: (s) => ({
         books: s.books,

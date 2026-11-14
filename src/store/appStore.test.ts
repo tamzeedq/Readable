@@ -34,6 +34,19 @@ describe('persisted store migration', () => {
   });
 });
 
+describe('v2 → v3 migration', () => {
+  it('marks existing stamps pending so they are pushed', async () => {
+    const stamps = { 'book:b1': { updatedAt: '2026-01-01T00:00:00.000Z' }, 'shelf:s': { updatedAt: '2026-01-01T00:00:00.000Z', deleted: true } };
+    localStorage.setItem('readable-v1', JSON.stringify({ state: { books: [makeBook('b1')], shelves: [], stamps, bookFiles: {}, syncCursor: 'c', syncUserId: 'u' }, version: 2 }));
+    const { useAppStore } = await import('./appStore');
+    const s = useAppStore.getState();
+    expect(s.books).toHaveLength(1);
+    expect(s.stamps['book:b1']).toEqual({ updatedAt: '2026-01-01T00:00:00.000Z', pending: true });
+    expect(s.stamps['shelf:s']).toEqual({ updatedAt: '2026-01-01T00:00:00.000Z', deleted: true, pending: true });
+    expect(s.syncCursor).toBe('c');
+  });
+});
+
 describe('store stamping', () => {
   it('stamps local edits and deletes, but not sync-applied changes', async () => {
     const { useAppStore, applyFromSync } = await import('./appStore');

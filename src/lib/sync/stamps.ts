@@ -29,8 +29,8 @@ export function stampChanges(prev: StampSlice, next: StampSlice, stamps: SyncSta
   if (!touchedBooks && !touchedShelves && !touchedPrefs && !touchedLog) return stamps;
 
   const out: SyncStamps = { ...stamps };
-  const live = (key: string) => void (out[key] = { updatedAt: now });
-  const dead = (key: string) => void (out[key] = { updatedAt: now, deleted: true });
+  const live = (key: string) => void (out[key] = { updatedAt: now, pending: true });
+  const dead = (key: string) => void (out[key] = { updatedAt: now, deleted: true, pending: true });
 
   if (touchedBooks) {
     const before = synced(prev.books);

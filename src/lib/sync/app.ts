@@ -5,7 +5,7 @@ import { useAuth } from '../auth';
 import { supabase } from '../supabase';
 import { deleteBookData, loadBookContent, loadCover, saveBookContent, saveCover } from '../bookStorage';
 import { syncOnce } from './engine';
-import { uploadBookFile, downloadBookFile } from './files';
+import { uploadBookFile, downloadBookFile, deleteBookFile } from './files';
 import { createSyncRunner, createStatusStore, type SyncRunner, type SyncStoreAdapter } from './runner';
 
 export const useSyncStatus = createStatusStore();
@@ -43,6 +43,7 @@ function buildRunner(): SyncRunner | null {
     files: {
       upload: ({ bookId, data, contentHash }) => uploadBookFile(client, { bookId, data, contentHash, contentType: 'application/zip' }),
       download: (path) => downloadBookFile(client, path),
+      remove: (path, bookId) => deleteBookFile(client, path, bookId),
     },
     content: { load: loadBookContent, loadCover, save: saveBookContent, saveCover, remove: deleteBookData },
   });

@@ -11,7 +11,6 @@ const B = '22222222-2222-4222-8222-222222222222';
 const T0 = '2026-03-01T00:00:00.000Z';
 const T1 = '2026-03-02T00:00:00.000Z';
 const T2 = '2026-03-03T00:00:00.000Z';
-const CURSOR = T0;
 
 const remoteBook = (title: string, updated_at: string, deleted_at: string | null = null): Tables<'books'> =>
   ({ ...bookToRow(makeBook(B, { title }), U), created_at: T0, updated_at, deleted_at }) as Tables<'books'>;
@@ -19,12 +18,12 @@ const remoteBook = (title: string, updated_at: string, deleted_at: string | null
 const remoteOf = (books: Tables<'books'>[]) =>
   flattenRemote({ books, shelves: [], book_shelves: [], bookmarks: [], reading_progress: [], reading_sessions: [], preferences: [], profiles: [] } as never);
 
-const localWith = (title: string, stampAt: string, extra: Partial<LocalSnapshot> = {}): LocalSnapshot => ({
-  ...emptySnapshot(), books: [makeBook(B, { title })], stamps: { [`book:${B}`]: { updatedAt: stampAt } }, ...extra,
+const localWith = (title: string, stampAt: string, extra: Partial<LocalSnapshot> = {}, pending = true): LocalSnapshot => ({
+  ...emptySnapshot(), books: [makeBook(B, { title })], stamps: { [`book:${B}`]: { updatedAt: stampAt, pending } }, ...extra,
 });
 
 const run = (local: LocalSnapshot, remote: Tables<'books'>[]) => {
-  const { final, push } = resolve(flattenLocal(local, U, CURSOR), remoteOf(remote));
+  const { final, push } = resolve(flattenLocal(local, U), remoteOf(remote));
   return { final, push, snap: buildSnapshot(final, local) };
 };
 
@@ -48,15 +47,15 @@ describe('last-write-wins', () => {
     expect(snap.books[0].title).toBe('remote');
   });
 
-  it('unchanged local (stamp not after cursor) yields to remote even if stamp looks newer than remote', () => {
-    const { push, snap } = run(localWith('local', T0), [remoteBook('remote', '2026-02-01T00:00:00.000Z')]);
+  it('unchanged local (not pending) yields to remote even if stamp looks newer than remote', () => {
+    const { push, snap } = run(localWith('local', T0, {}, false), [remoteBook('remote', '2026-02-01T00:00:00.000Z')]);
     expect(push.filter((p) => p.table === 'books')).toHaveLength(0);
     expect(snap.books[0].title).toBe('remote');
   });
 
   it('local-only dirty records are pushed; unstamped records push on first sync', () => {
     const local = { ...emptySnapshot(), books: [makeBook(B)] };
-    const { push } = resolve(flattenLocal(local, U, null), []);
+    const { push } = resolve(flattenLocal(local, U), []);
     expect(push.map((p) => p.table).sort()).toEqual(['books', 'preferences']);
   });
 
@@ -69,7 +68,7 @@ describe('last-write-wins', () => {
 
   it('keeps transient books out of sync but in the snapshot', () => {
     const local = { ...emptySnapshot(), books: [makeBook(B, { transient: true })] };
-    const recs = flattenLocal(local, U, null);
+    const recs = flattenLocal(local, U);
     expect(recs.some((r) => r.table === 'books')).toBe(false);
     expect(buildSnapshot(resolve(recs, []).final, local).books[0].transient).toBe(true);
   });
@@ -83,7 +82,7 @@ describe('tombstones', () => {
   });
 
   it('local tombstone newer than remote is pushed as a deletion', () => {
-    const local: LocalSnapshot = { ...emptySnapshot(), stamps: { [`book:${B}`]: { updatedAt: T2, deleted: true } } };
+    const local: LocalSnapshot = { ...emptySnapshot(), stamps: { [`book:${B}`]: { updatedAt: T2, deleted: true, pending: true } } };
     const { push, snap } = run(local, [remoteBook('remote', T1)]);
     const p = push.find((x) => x.table === 'books')!;
     expect(p.deleted).toBe(true);
@@ -92,7 +91,7 @@ describe('tombstones', () => {
   });
 
   it('remote edit newer than a local tombstone resurrects the book', () => {
-    const local: LocalSnapshot = { ...emptySnapshot(), stamps: { [`book:${B}`]: { updatedAt: T1, deleted: true } } };
+    const local: LocalSnapshot = { ...emptySnapshot(), stamps: { [`book:${B}`]: { updatedAt: T1, deleted: true, pending: true } } };
     const { push, snap } = run(local, [remoteBook('remote', T2)]);
     expect(push.some((x) => x.table === 'books')).toBe(false);
     expect(snap.books.map((b) => b.title)).toEqual(['remote']);

@@ -27,16 +27,19 @@ export function normalizeSnapshot(s: LocalSnapshot): LocalSnapshot {
 
 const ms = (iso: string) => Date.parse(iso);
 
-/** Flatten a (normalized) local snapshot into row-level records, marking those changed since `cursor`. */
-export function flattenLocal(s: LocalSnapshot, userId: string, cursor: string | null): FlatRecord[] {
-  const cursorMs = cursor ? ms(cursor) : null;
+/**
+ * Flatten a (normalized) local snapshot into row-level records. A record is dirty (to be pushed) when it has
+ * no stamp or its stamp is `pending` — tracked locally, so device clock skew can't hide a change.
+ * The sync cursor is for pulling only.
+ */
+export function flattenLocal(s: LocalSnapshot, userId: string): FlatRecord[] {
   const out: FlatRecord[] = [];
   const seen = new Set<string>();
   const add = (table: SyncTable, key: string, row: Record<string, unknown>) => {
     seen.add(key);
     const st = s.stamps[key];
     const at = st ? ms(st.updatedAt) : 0;
-    const dirty = !st || cursorMs === null || at > cursorMs;
+    const dirty = !st || st.pending === true;
     out.push({ table, key, row, deleted: false, at, dirty });
   };
   const synced = s.books.filter((b) => !b.transient);
@@ -66,7 +69,7 @@ export function flattenLocal(s: LocalSnapshot, userId: string, cursor: string | 
     else if (p[0] === 'bookmark') rec = ['bookmarks', { ...base, book_id: p[1], word_index: Number(p[2]) }];
     if (!rec) continue;
     const at = ms(st.updatedAt);
-    out.push({ table: rec[0], key, row: rec[1], deleted: true, at, dirty: cursorMs === null || at > cursorMs });
+    out.push({ table: rec[0], key, row: rec[1], deleted: true, at, dirty: st.pending === true });
   }
   return out;
 }
