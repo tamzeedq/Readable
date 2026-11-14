@@ -17,12 +17,13 @@ import {
   useResolvedTheme,
 } from './shared';
 
-export type SectionId = 'reading' | 'appearance' | 'library' | 'shortcuts' | 'about';
+export type SectionId = 'reading' | 'appearance' | 'library' | 'backup' | 'shortcuts' | 'about';
 
 export const SECTIONS: { id: SectionId; label: string }[] = [
   { id: 'reading', label: 'Reading' },
   { id: 'appearance', label: 'Appearance' },
   { id: 'library', label: 'Library & files' },
+  { id: 'backup', label: 'Backup & restore' },
   { id: 'shortcuts', label: 'Keyboard shortcuts' },
   { id: 'about', label: 'About' },
 ];
@@ -109,7 +110,7 @@ export function WpmStepper() {
 }
 
 /** Section heading; on mobile the pushed page header shows the title, so it is visually hidden. */
-function SectionHead({ title, intro, id, hidden }: { title: string; intro?: string; id: string; hidden?: boolean }) {
+export function SectionHead({ title, intro, id, hidden }: { title: string; intro?: string; id: string; hidden?: boolean }) {
   return (
     <>
       <h2 className={hidden ? 'sr-only' : 'set-h2'} id={id}>
