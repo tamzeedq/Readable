@@ -10,6 +10,7 @@ import {
   ShortcutsSection,
   type SectionId,
 } from './settings/sections';
+import { BackupSection } from './settings/BackupSection';
 import './settings/Settings.css';
 
 function SectionBody({ id, mobile }: { id: SectionId; mobile?: boolean }) {
@@ -20,6 +21,8 @@ function SectionBody({ id, mobile }: { id: SectionId; mobile?: boolean }) {
       return <AppearanceSection mobile={mobile} />;
     case 'library':
       return <LibrarySection mobile={mobile} />;
+    case 'backup':
+      return <BackupSection mobile={mobile} />;
     case 'shortcuts':
       return <ShortcutsSection />;
     case 'about':
