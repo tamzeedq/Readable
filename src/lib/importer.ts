@@ -2,7 +2,7 @@
 // and add the Book metadata to the library store.
 import type { Book, BookFormat } from '../types';
 import { newId, useAppStore } from '../store/appStore';
-import { saveBookContent, saveCover } from './bookStorage';
+import { StorageFullError, requestPersistentStorage, saveBookContent, saveCover } from './bookStorage';
 import {
   ParseError,
   UnreadableError,
@@ -19,6 +19,9 @@ export { ParseError, UnreadableError, UnsupportedFormatError };
 export type { ParseProgress } from './parser';
 
 /** Accept string for the file picker */
+/** Largest file we try to import (in-browser parsing of bigger files risks running out of memory) */
+export const MAX_IMPORT_BYTES = 100 * 1024 * 1024;
+
 export const IMPORT_ACCEPT = '.epub,.pdf,.txt,.text,.md,.markdown';
 
 /** Deterministic 0–359 hue from a title (FNV-1a) */
@@ -108,6 +111,11 @@ export async function importFile(
   onProgress: (p: { percent: number; detail: string }) => void,
 ): Promise<Book> {
   const format = detectFormat(file);
+  if (file.size === 0) throw new UnreadableError('This file is empty');
+  if (file.size > MAX_IMPORT_BYTES) {
+    throw new UnreadableError(`This file is too large (${Math.round(file.size / 1048576)} MB) — the limit is ${MAX_IMPORT_BYTES / 1048576} MB`);
+  }
+  void requestPersistentStorage();
   const progress: ProgressFn = (p) => onProgress({ percent: Math.min(99, Math.max(0, p.percent)), detail: p.detail });
   let parsed: ParsedBook;
   try {
@@ -115,7 +123,7 @@ export async function importFile(
     else if (format === 'pdf') parsed = await parsePdf(file, progress);
     else parsed = await parseTxt(file, progress);
   } catch (e) {
-    if (e instanceof UnreadableError || e instanceof UnsupportedFormatError || e instanceof ParseError) throw e;
+    if (e instanceof StorageFullError || e instanceof UnreadableError || e instanceof UnsupportedFormatError || e instanceof ParseError) throw e;
     console.error('Import failed', file.name, e);
     throw new ParseError('This file couldn’t be read — it may be damaged');
   }

@@ -13,6 +13,9 @@ import { ReaderScreen } from './reader/ReaderScreen';
 import { SearchOverlay } from './overlays/SearchOverlay';
 import { ImportModal } from './overlays/ImportModal';
 import { BookDetails } from './overlays/BookDetails';
+import { ErrorBoundary } from './components/ui/ErrorBoundary';
+import { Toaster, notify } from './components/ui/Toaster';
+import { isQuotaError } from './lib/bookStorage';
 import './App.css';
 
 /** Applies palette + resolved light/dark theme to <html> so tokens.css can switch. */
@@ -36,8 +39,34 @@ function usePurgeTransientBooks() {
   }, []);
 }
 
-export default function App() {
+/** Surface storage-full errors from places that can't catch them (e.g. the persisted store's localStorage writes). */
+function useStorageErrorNotice() {
+  useEffect(() => {
+    const msg = 'Your device is out of storage space, so recent changes may not be saved. Remove a book or free up space.';
+    const onError = (e: ErrorEvent) => {
+      if (isQuotaError(e.error)) {
+        e.preventDefault();
+        notify(msg, 'error');
+      }
+    };
+    const onRejection = (e: PromiseRejectionEvent) => {
+      if (isQuotaError(e.reason)) {
+        e.preventDefault();
+        notify(msg, 'error');
+      }
+    };
+    window.addEventListener('error', onError);
+    window.addEventListener('unhandledrejection', onRejection);
+    return () => {
+      window.removeEventListener('error', onError);
+      window.removeEventListener('unhandledrejection', onRejection);
+    };
+  }, []);
+}
+
+function AppShell() {
   useThemeAttributes();
+  useStorageErrorNotice();
   usePurgeTransientBooks();
 
   const screen = useAppStore((s) => s.screen);
@@ -65,6 +94,8 @@ export default function App() {
   }, [openOverlay, closeOverlay]);
 
   const isReader = screen === 'reader';
+  const bookKey = useAppStore((s) => s.activeBookId);
+  const openLibrary = useAppStore((s) => s.openLibrary);
 
   return (
     <div className={`app ${isMobile ? 'is-mobile' : 'is-desktop'}`}>
@@ -77,7 +108,11 @@ export default function App() {
           {screen === 'collections' && <CollectionsScreen onNewShelf={() => setNewShelfOpen(true)} />}
           {screen === 'stats' && <StatsScreen />}
           {screen === 'settings' && <SettingsScreen />}
-          {isReader && <ReaderScreen />}
+          {isReader && (
+            <ErrorBoundary scope="reader" resetKey={bookKey} onLibrary={() => openLibrary()}>
+              <ReaderScreen />
+            </ErrorBoundary>
+          )}
         </main>
         {!isReader && isMobile && <TabBar />}
       </div>
@@ -86,6 +121,15 @@ export default function App() {
       {(overlay === 'import' || overlay === 'paste') && <ImportModal />}
       {overlay === 'details' && <BookDetails />}
       {newShelfOpen && <NewShelfDialog onClose={() => setNewShelfOpen(false)} />}
+      <Toaster />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <ErrorBoundary scope="app">
+      <AppShell />
+    </ErrorBoundary>
   );
 }
