@@ -23,6 +23,7 @@ async function guardedSet(key: string, value: unknown, store: ReturnType<typeof 
   } catch (e) {
     if (isQuotaError(e)) throw new StorageFullError();
     console.error('Storage write failed', e);
+    // eslint-disable-next-line preserve-caught-error -- cause is already logged above
     throw new Error('Couldn’t save to this device’s storage. Private browsing can cause this.');
   }
 }
