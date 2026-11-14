@@ -32,7 +32,7 @@ function useResumeSnippet(book: Book | undefined): string | null {
         if (!words.length) return;
         const text = words
           .join(' ')
-          .replace(/^[\s"'“‘(\[—–-]+/, '')
+          .replace(/^[\s"'“‘([—–-]+/, '')
           .replace(/[\s.,;:!?"'”’)\]—–-]+$/, '');
         if (text) setSnippet(text);
       })
