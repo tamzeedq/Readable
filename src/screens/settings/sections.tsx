@@ -17,12 +17,13 @@ import {
   useResolvedTheme,
 } from './shared';
 
-export type SectionId = 'reading' | 'appearance' | 'library' | 'backup' | 'shortcuts' | 'about';
+export type SectionId = 'reading' | 'appearance' | 'library' | 'account' | 'backup' | 'shortcuts' | 'about';
 
 export const SECTIONS: { id: SectionId; label: string }[] = [
   { id: 'reading', label: 'Reading' },
   { id: 'appearance', label: 'Appearance' },
   { id: 'library', label: 'Library & files' },
+  { id: 'account', label: 'Account' },
   { id: 'backup', label: 'Backup & restore' },
   { id: 'shortcuts', label: 'Keyboard shortcuts' },
   { id: 'about', label: 'About' },

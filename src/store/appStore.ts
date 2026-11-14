@@ -98,6 +98,8 @@ export interface AppState {
   /** Book the details drawer / reader is showing */
   activeBookId: string | null;
   libraryFilter: LibraryFilter;
+  /** One-shot: settings section to open on next visit (not persisted) */
+  settingsTarget: string | null;
   navigate: (screen: Screen) => void;
   openOverlay: (overlay: Overlay, bookId?: string) => void;
   closeOverlay: () => void;
@@ -218,6 +220,7 @@ export const useAppStore = create<AppState>()(
       overlay: 'none',
       activeBookId: null,
       libraryFilter: defaultLibraryFilter,
+      settingsTarget: null,
       navigate: (screen) => set({ screen, overlay: 'none' }),
       openOverlay: (overlay, bookId) =>
         set((s) => ({ overlay, activeBookId: bookId ?? s.activeBookId })),

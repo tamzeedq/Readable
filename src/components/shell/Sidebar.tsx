@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useMemo } from 'react';
 import { bookStatus, isRecentlyAdded, useAppStore, useLibraryBooks } from '../../store/appStore';
+import { useAuth } from '../../lib/auth';
 import type { Screen } from '../../types';
 import './Sidebar.css';
 
@@ -38,6 +39,8 @@ export function Sidebar({ onNewShelf }: { onNewShelf: () => void }) {
   const collapsed = useAppStore((s) => s.sidebarCollapsed);
   const setCollapsed = useAppStore((s) => s.setSidebarCollapsed);
   const books = useLibraryBooks();
+  const auth = useAuth();
+  const accountLabel = auth.status === 'signed-in' && auth.user?.email ? auth.user.email : auth.status === 'unavailable' ? 'Account' : 'Sign in';
 
   const counts = useMemo(() => {
     const byShelf: Record<string, number> = {};
@@ -172,11 +175,17 @@ export function Sidebar({ onNewShelf }: { onNewShelf: () => void }) {
         </section>
       </div>
 
-      <div className="sidebar-footer" title="Account and sync are coming in a later version">
+      <button
+        type="button"
+        className="sidebar-footer sidebar-account"
+        onClick={() => {
+          useAppStore.setState({ settingsTarget: 'account' });
+          navigate('settings');
+        }}
+      >
         <User size={18} strokeWidth={1.6} aria-hidden="true" />
-        <span>Account &amp; sync</span>
-        <span className="soon">Soon</span>
-      </div>
+        <span>{accountLabel}</span>
+      </button>
     </aside>
   );
 }

@@ -16,6 +16,7 @@ import { BookDetails } from './overlays/BookDetails';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import { Toaster, notify } from './components/ui/Toaster';
 import { isQuotaError } from './lib/bookStorage';
+import { initAuth } from './lib/auth';
 import './App.css';
 
 /** Applies palette + resolved light/dark theme to <html> so tokens.css can switch. */
@@ -67,6 +68,7 @@ function useStorageErrorNotice() {
 function AppShell() {
   useThemeAttributes();
   useStorageErrorNotice();
+  useEffect(initAuth, []);
   usePurgeTransientBooks();
 
   const screen = useAppStore((s) => s.screen);
