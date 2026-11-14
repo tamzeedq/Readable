@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# ReadFlow App Quick Start
+# Readable App Quick Start
 # Builds and runs the app in development mode
 
-echo "🚀 ReadFlow - Speed Reading App"
+echo "🚀 Readable - Speed Reading App"
 echo "================================"
 echo ""
 

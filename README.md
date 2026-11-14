@@ -27,6 +27,18 @@ npm run build       # typecheck + production web build
 npm run tauri build # desktop installer
 ```
 
+## Release build
+
+```bash
+npm ci
+npm run typecheck && npm run lint && npm test
+npm run tauri build   # installers land in src-tauri/target/release/bundle/
+```
+
+- App identifier is the placeholder `app.readable.desktop`; change it in `src-tauri/tauri.conf.json` before the first public release (it cannot change later without breaking upgrades).
+- The CSP in `tauri.conf.json` allows the bundled pdf.js worker, fonts, `blob:` covers and `https://*.supabase.co`. If you use a custom Supabase domain, add it to `connect-src`.
+- TODO (needs the commander's credentials): code signing (Windows certificate, Apple Developer ID + notarization) and the auto-updater (signing keypair + update endpoint). Never commit signing keys; provide them as CI secrets.
+
 ## Project layout
 
 ```
