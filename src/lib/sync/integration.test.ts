@@ -118,8 +118,8 @@ describe.skipIf(!enabled)('sync against Supabase', () => {
       books: snap2.books.filter((x) => x.id !== BOOK2).map((x) => (x.id === BOOK1 ? { ...x, title: 'First (edited)' } : x)),
       stamps: {
         ...snap2.stamps,
-        [`book:${BOOK2}`]: { updatedAt: new Date().toISOString(), deleted: true },
-        [`book:${BOOK1}`]: { updatedAt: new Date().toISOString() },
+        [`book:${BOOK2}`]: { updatedAt: new Date().toISOString(), deleted: true, pending: true },
+        [`book:${BOOK1}`]: { updatedAt: new Date().toISOString(), pending: true },
       },
     };
     const pushed = await syncOnce(a2, snap2, dev2.cursor);

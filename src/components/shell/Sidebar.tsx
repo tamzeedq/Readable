@@ -15,6 +15,7 @@ import {
 import { useMemo } from 'react';
 import { bookStatus, isRecentlyAdded, useAppStore, useLibraryBooks } from '../../store/appStore';
 import { useAuth } from '../../lib/auth';
+import { useSyncStatus } from '../../lib/sync/app';
 import type { Screen } from '../../types';
 import './Sidebar.css';
 
@@ -40,6 +41,8 @@ export function Sidebar({ onNewShelf }: { onNewShelf: () => void }) {
   const setCollapsed = useAppStore((s) => s.setSidebarCollapsed);
   const books = useLibraryBooks();
   const auth = useAuth();
+  const sync = useSyncStatus((x) => x.state);
+  const syncLabel = { idle: '', syncing: 'Syncing', synced: 'Synced', offline: 'Offline', error: 'Sync problem' }[sync];
   const accountLabel = auth.status === 'signed-in' && auth.user?.email ? auth.user.email : auth.status === 'unavailable' ? 'Account' : 'Sign in';
 
   const counts = useMemo(() => {
@@ -185,6 +188,12 @@ export function Sidebar({ onNewShelf }: { onNewShelf: () => void }) {
       >
         <User size={18} strokeWidth={1.6} aria-hidden="true" />
         <span>{accountLabel}</span>
+        {auth.status === 'signed-in' && syncLabel && (
+          <span className="sync-state" data-state={sync} title={syncLabel}>
+            <span className="sync-dot" aria-hidden="true" />
+            <span className="sr-only">{syncLabel}</span>
+          </span>
+        )}
       </button>
     </aside>
   );

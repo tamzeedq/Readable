@@ -15,6 +15,8 @@ import type {
 } from '../types';
 import { deleteBookData } from '../lib/bookStorage';
 import { dayKey } from '../lib/format';
+import { stampChanges } from '../lib/sync/stamps';
+import type { BookFileRef, SyncStamps } from '../lib/sync/types';
 
 export const defaultReadingPrefs: ReadingPrefs = {
   defaultWpm: 320,
@@ -92,6 +94,16 @@ export interface AppState {
   /** Record reading time and words for a book on today's date */
   logReading: (bookId: string, ms: number, words: number) => void;
 
+  // ---- Cloud sync bookkeeping (persisted; see lib/sync) ----
+  /** Change stamps per synced entity, incl. delete tombstones */
+  stamps: SyncStamps;
+  /** Cloud file references per book id (scoped to `syncUserId`) */
+  bookFiles: Record<string, BookFileRef>;
+  /** Server-time cursor of the last completed sync (null = never synced) */
+  syncCursor: string | null;
+  /** The account the cursor/bookFiles belong to */
+  syncUserId: string | null;
+
   // ---- UI (not persisted) ----
   screen: Screen;
   overlay: Overlay;
@@ -106,6 +118,34 @@ export interface AppState {
   openReader: (bookId: string, atWord?: number) => void;
   openLibrary: (filter?: Partial<LibraryFilter>) => void;
   setLibraryFilter: (patch: Partial<LibraryFilter>) => void;
+}
+
+/**
+ * v1 → v2 adds the sync bookkeeping fields. Existing data is untouched; entities with no stamp are
+ * treated as changed-at-epoch, so the first sync merges them into the account without overriding it.
+ */
+export function migratePersisted(persisted: unknown, version: number): unknown {
+  const p = (persisted ?? {}) as Record<string, unknown>;
+  let out = p;
+  if (version < 2) out = { ...out, stamps: {}, bookFiles: {}, syncCursor: null, syncUserId: null };
+  if (version < 3) {
+    // Stamps from before dirtiness was tracked locally: treat every one as not yet pushed
+    const stamps = (out.stamps ?? {}) as SyncStamps;
+    out = { ...out, stamps: Object.fromEntries(Object.entries(stamps).map(([k, v]) => [k, { ...v, pending: true }])) };
+  }
+  return out;
+}
+
+let applyingSync = false;
+
+/** Apply sync results to the store without them being stamped as local edits. */
+export function applyFromSync(patch: Partial<AppState>): void {
+  applyingSync = true;
+  try {
+    useAppStore.setState(patch);
+  } finally {
+    applyingSync = false;
+  }
 }
 
 export const useAppStore = create<AppState>()(
@@ -215,6 +255,12 @@ export const useAppStore = create<AppState>()(
         });
       },
 
+      // ---- Cloud sync bookkeeping ----
+      stamps: {},
+      bookFiles: {},
+      syncCursor: null,
+      syncUserId: null,
+
       // ---- UI ----
       screen: 'home',
       overlay: 'none',
@@ -239,7 +285,8 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'readable-v1',
-      version: 1,
+      version: 3,
+      migrate: migratePersisted,
       partialize: (s) => ({
         books: s.books,
         shelves: s.shelves,
@@ -249,6 +296,10 @@ export const useAppStore = create<AppState>()(
         palette: s.palette,
         sidebarCollapsed: s.sidebarCollapsed,
         readingLog: s.readingLog,
+        stamps: s.stamps,
+        bookFiles: s.bookFiles,
+        syncCursor: s.syncCursor,
+        syncUserId: s.syncUserId,
       }),
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<AppState>;
@@ -262,6 +313,13 @@ export const useAppStore = create<AppState>()(
     },
   ),
 );
+
+// Stamp every local mutation (and deletion) for sync. Changes applied by the sync runner are not re-stamped.
+useAppStore.subscribe((state, prev) => {
+  if (applyingSync) return;
+  const stamps = stampChanges(prev, state, state.stamps, new Date().toISOString());
+  if (stamps !== state.stamps) useAppStore.setState({ stamps });
+});
 
 /** Effective appearance for a book: global defaults overlaid with per-book overrides */
 export function useAppearance(bookId: string | null): AppearancePrefs {

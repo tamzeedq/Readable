@@ -1,11 +1,28 @@
 import { useState, type FormEvent } from 'react';
 import { authMessage, requestPasswordReset, signIn, signOut, signUp, useAuth } from '../../lib/auth';
+import { retrySync, useSyncStatus } from '../../lib/sync/app';
 import { SectionHead, SettingRow } from './sections';
+
+function syncText(s: { state: string; lastSyncedAt: number | null; message: string | null }): string {
+  switch (s.state) {
+    case 'syncing':
+      return 'Syncing…';
+    case 'synced':
+      return s.lastSyncedAt ? `Up to date · ${new Date(s.lastSyncedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}` : 'Up to date';
+    case 'offline':
+      return s.message ?? 'Offline — will sync when you’re back online';
+    case 'error':
+      return `Sync problem: ${s.message ?? 'something went wrong'}`;
+    default:
+      return 'Waiting to sync…';
+  }
+}
 
 type Mode = 'sign-in' | 'sign-up';
 
 export function AccountSection({ mobile }: { mobile?: boolean }) {
   const { status, user } = useAuth();
+  const sync = useSyncStatus();
   const [mode, setMode] = useState<Mode>('sign-in');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -70,7 +87,17 @@ export function AccountSection({ mobile }: { mobile?: boolean }) {
               Sign out
             </button>
           </SettingRow>
-          <SettingRow title="Your library stays on this device" desc="Syncing books across devices isn’t part of accounts yet." />
+          <SettingRow title="Sync" desc={syncText(sync)}>
+            {(sync.state === 'error' || sync.state === 'offline') && (
+              <button type="button" className="btn btn-sm" onClick={retrySync}>
+                Retry
+              </button>
+            )}
+          </SettingRow>
+          <SettingRow
+            title="Books on this device are kept"
+            desc="The first time you sign in, your library here is merged with your account — nothing is deleted. If something was changed in both places, the most recent change wins."
+          />
         </div>
         {noteEl}
       </>
@@ -81,7 +108,7 @@ export function AccountSection({ mobile }: { mobile?: boolean }) {
         <div className="set-rows">
           <SettingRow
             title="Accounts are optional"
-            desc="Readable works fully without one. An account will let you sync across devices when that arrives."
+            desc="Readable works fully without one. With an account, your library, progress, bookmarks, shelves, settings and stats sync across your devices. Books already on this device are merged in, never deleted."
           />
         </div>
         <form onSubmit={submit} style={{ display: 'grid', gap: 12, marginTop: 16, maxWidth: 360 }} noValidate>
@@ -132,7 +159,7 @@ export function AccountSection({ mobile }: { mobile?: boolean }) {
 
   return (
     <section aria-labelledby="set-account-h">
-      <SectionHead title="Account" id="set-account-h" hidden={mobile} intro={mobile ? undefined : 'Optional. Sign in to prepare for syncing across devices.'} />
+      <SectionHead title="Account" id="set-account-h" hidden={mobile} intro={mobile ? undefined : 'Optional. Sign in to keep your library in sync across devices.'} />
       {body}
     </section>
   );
