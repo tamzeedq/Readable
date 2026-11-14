@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- Supabase rows are untyped until gen_types is wired in */
 import { createClient } from '@supabase/supabase-js';
 
 // Initialize Supabase client

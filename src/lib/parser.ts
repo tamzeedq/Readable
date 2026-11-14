@@ -69,7 +69,7 @@ const HAS_WORD_CHAR_RE = /[\p{L}\p{N}]/u;
 /** Tokens made only of these attach to the previous word ("word ." → "word.") */
 const CLOSING_ONLY_RE = /^[.,;:!?)\]}\u00BB\u201D\u2019"'\u2026%]+$/;
 /** Tokens made only of these attach to the next word ("“ Well" → "“Well") */
-const OPENING_ONLY_RE = /^[(\[{\u00AB\u201C\u2018"']+$/;
+const OPENING_ONLY_RE = /^[([{\u00AB\u201C\u2018"']+$/;
 
 export function normalizeText(text: string): string {
   return text.replace(INVISIBLE_RE, '').replace(ODD_SPACE_RE, ' ').replace(/\r\n?/g, '\n');
@@ -245,7 +245,7 @@ export interface TextParseOptions {
 export function parsePlainText(input: string, opts: TextParseOptions = {}): ParsedBook {
   const text = normalizeText(input);
   const g = stripGutenberg(text);
-  let body = g.body.replace(/^\n+/, '');
+  const body = g.body.replace(/^\n+/, '');
 
   // Markdown-ish cleanup: heading markers, emphasis bullets are harmless; strip "#"s so headings read cleanly
   const isMarkdown = /\.(md|markdown)$/i.test(opts.filename ?? '');
