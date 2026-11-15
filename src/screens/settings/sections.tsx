@@ -544,8 +544,10 @@ const READER_KEYS: { keys: string[]; label: string }[] = [
 ];
 
 export function ShortcutsSection() {
+  const openOverlay = useAppStore((s) => s.openOverlay);
   const anywhere = [
     { keys: [MOD_KEY_LABEL], label: 'Search books and actions' },
+    { keys: ['?'], label: 'Show shortcuts anywhere' },
     { keys: ['Esc'], label: 'Close search or a dialog' },
   ];
   const list = (title: string, items: { keys: string[]; label: string }[]) => (
@@ -575,6 +577,11 @@ export function ShortcutsSection() {
         {list('Reader', READER_KEYS)}
         {list('Anywhere', anywhere)}
       </div>
+      <p className="set-about-p">
+        <button type="button" className="btn" onClick={() => openOverlay('shortcuts')}>
+          Open shortcuts overlay
+        </button>
+      </p>
     </section>
   );
 }
@@ -582,6 +589,7 @@ export function ShortcutsSection() {
 /* ---------- About ---------- */
 
 export function AboutSection({ mobile }: { mobile?: boolean }) {
+  const openOverlay = useAppStore((s) => s.openOverlay);
   return (
     <section aria-labelledby="set-about-h" className="set-about">
       <SectionHead title="About" id="set-about-h" hidden={mobile} />
@@ -593,6 +601,11 @@ export function AboutSection({ mobile }: { mobile?: boolean }) {
         Readable shows text one word at a time at the speed you choose, with the letter your eye should rest on
         picked out in colour. Import EPUB, PDF or plain-text files, or paste anything you want to get through, and
         read it without moving your eyes across a page. Everything stays on this device.
+      </p>
+      <p className="set-about-p">
+        <button type="button" className="btn" onClick={() => openOverlay('onboarding')}>
+          Show intro again
+        </button>
       </p>
       <h3 className="set-h3">Credits</h3>
       <ul className="set-credits">

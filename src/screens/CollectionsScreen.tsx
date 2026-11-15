@@ -225,7 +225,7 @@ export function CollectionsScreen({ onNewShelf }: { onNewShelf: () => void }) {
       {shelves.length === 0 && (
         <div className="bk-empty col-empty">
           <h2>No shelves yet</h2>
-          <p>Shelves group books however you like — by mood, project or reading club.</p>
+          <p>Shelves group books however you like — by mood, project or reading club. Make one, then add books from a book’s details.</p>
           <button type="button" className="btn" onClick={onNewShelf}>
             <Plus size={17} strokeWidth={1.8} aria-hidden="true" />
             New shelf

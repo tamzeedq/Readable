@@ -1,0 +1,95 @@
+/* "?" shortcuts overlay */
+.modal.sh-modal {
+  width: min(720px, calc(100vw - 32px));
+}
+
+.sh {
+  padding: 22px 28px 26px;
+  font-family: var(--ui);
+  color: var(--ink);
+}
+.sheet .sh {
+  padding: 6px 20px 24px;
+  overflow-y: auto;
+}
+
+.sh-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.sh-title {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 28px;
+  letter-spacing: -0.015em;
+}
+
+.sh-close {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.sh-close:hover {
+  background: var(--chip);
+  color: var(--ink);
+}
+
+.sh-cols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px;
+}
+
+.sh-group-title {
+  margin: 12px 0 4px;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.sh-list {
+  margin: 0;
+}
+
+.sh-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 16px;
+}
+.sh-row dd {
+  margin: 0;
+  white-space: nowrap;
+}
+.sh-row kbd {
+  font-size: 13px;
+  padding: 2px 8px;
+  color: var(--ink);
+  background: var(--surface);
+}
+.sh-or {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+@media (max-width: 640px) {
+  .sh-cols {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
