@@ -153,7 +153,20 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            [_ in never]: never
+            "delete_my_account":
+{ Args: Record<PropertyKey, never>; Returns: undefined
+                           },
+"my_storage_usage":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "limit_bytes": number,"used_bytes": number
+            }[]
+                           },
+"storage_quota_bytes":
+{ Args: Record<PropertyKey, never>; Returns: number
+                           },
+"storage_used_bytes":
+{ Args: { "uid": string }; Returns: number
+                           }
           }
           Enums: {
             [_ in never]: never
