@@ -1,6 +1,7 @@
 // Optional accounts. The app is fully usable signed out; this only tracks who (if anyone) is signed in.
 import { create } from 'zustand';
-import type { User } from '@supabase/supabase-js';
+import type { SupabaseClient, User } from '@supabase/supabase-js';
+import type { Database } from '../types/supabase';
 import { isSyncConfigured, supabase } from './supabase';
 
 export type AuthStatus = 'unavailable' | 'loading' | 'signed-out' | 'signed-in';
@@ -90,3 +91,45 @@ export async function requestPasswordReset(email: string): Promise<void> {
 export function authMessage(e: unknown): string {
   return e instanceof AuthError ? e.message : friendlyAuthError(e);
 }
+
+export interface StorageUsage {
+  usedBytes: number;
+  limitBytes: number;
+}
+
+/** Bytes of cloud book files used by the signed-in user, and their limit (`my_storage_usage()` RPC). */
+export async function getStorageUsageWith(c: SupabaseClient<Database>): Promise<StorageUsage> {
+  const { data, error } = await c.rpc('my_storage_usage');
+  if (error) throw error;
+  const row = Array.isArray(data) ? data[0] : data;
+  return { usedBytes: Number(row?.used_bytes ?? 0), limitBytes: Number(row?.limit_bytes ?? 0) };
+}
+export const getStorageUsage = () => getStorageUsageWith(client());
+
+const BOOKS_BUCKET = 'books';
+
+/**
+ * Permanently delete the signed-in user's account. Contract with `delete_my_account()`: SQL cannot remove
+ * storage files, so the client deletes its own objects first (Storage API), then calls the RPC, which
+ * removes the auth user and cascades every row. Finally the local session is cleared. The local library
+ * on this device is not touched; the sync layer detaches itself when the status becomes signed-out.
+ */
+export async function deleteAccountWith(c: SupabaseClient<Database>): Promise<void> {
+  const { data } = await c.auth.getSession();
+  const uid = data.session?.user.id;
+  if (!uid) throw new AuthError('You’re not signed in.');
+  const bucket = c.storage.from(BOOKS_BUCKET);
+  for (let guard = 0; guard < 1000; guard++) {
+    const { data: objs, error } = await bucket.list(uid, { limit: 100 });
+    if (error) throw error;
+    const names = (objs ?? []).filter((o) => o.id).map((o) => `${uid}/${o.name}`);
+    if (!names.length) break;
+    const { error: rmErr } = await bucket.remove(names);
+    if (rmErr) throw rmErr;
+  }
+  const { error } = await c.rpc('delete_my_account');
+  if (error) throw error;
+  // The user no longer exists server-side; clear the session locally without a server round-trip
+  await c.auth.signOut({ scope: 'local' }).catch(() => undefined);
+}
+export const deleteAccount = () => deleteAccountWith(client());

@@ -1,6 +1,8 @@
-import { useState, type FormEvent } from 'react';
-import { authMessage, requestPasswordReset, signIn, signOut, signUp, useAuth } from '../../lib/auth';
+import { useEffect, useState, type FormEvent } from 'react';
+import { authMessage, deleteAccount, getStorageUsage, type StorageUsage, requestPasswordReset, signIn, signOut, signUp, useAuth } from '../../lib/auth';
 import { retrySync, useSyncStatus } from '../../lib/sync/app';
+import { formatBytes } from '../../lib/format';
+import { LegalDocument, LegalLinks, type LegalDoc } from './Legal';
 import { SectionHead, SettingRow } from './sections';
 
 function syncText(s: { state: string; lastSyncedAt: number | null; message: string | null }): string {
@@ -8,6 +10,7 @@ function syncText(s: { state: string; lastSyncedAt: number | null; message: stri
     case 'syncing':
       return 'Syncing…';
     case 'synced':
+      if (s.message) return s.message;
       return s.lastSyncedAt ? `Up to date · ${new Date(s.lastSyncedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}` : 'Up to date';
     case 'offline':
       return s.message ?? 'Offline — will sync when you’re back online';
@@ -20,7 +23,59 @@ function syncText(s: { state: string; lastSyncedAt: number | null; message: stri
 
 type Mode = 'sign-in' | 'sign-up';
 
+const CONFIRM_WORD = 'DELETE';
+
+function StorageMeter({ usage }: { usage: StorageUsage }) {
+  const pct = usage.limitBytes ? Math.min(100, Math.round((usage.usedBytes / usage.limitBytes) * 100)) : 0;
+  return (
+    <div style={{ display: 'grid', gap: 6, minWidth: 180 }}>
+      <div role="progressbar" aria-label="Cloud storage used" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct} style={{ height: 6, borderRadius: 3, background: 'var(--border, #ddd)', overflow: 'hidden' }}>
+        <div style={{ width: `${pct}%`, height: '100%', background: pct >= 100 ? 'var(--accent-text)' : 'currentColor' }} />
+      </div>
+      <span className="set-row-desc">
+        {formatBytes(usage.usedBytes)} of {formatBytes(usage.limitBytes)} used
+      </span>
+    </div>
+  );
+}
+
+function DeleteAccount({ busy, onDelete }: { busy: boolean; onDelete: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [typed, setTyped] = useState('');
+  if (!open) {
+    return (
+      <SettingRow
+        title="Delete account"
+        desc="Permanently removes your account, your synced data and your uploaded book files from our servers. Books already on this device stay here."
+      >
+        <button type="button" className="btn btn-sm" onClick={() => setOpen(true)}>
+          Delete account…
+        </button>
+      </SettingRow>
+    );
+  }
+  return (
+    <SettingRow
+      stack
+      title="Delete your account?"
+      desc={`This can’t be undone. Your library on this device is kept, but it will no longer sync. Type ${CONFIRM_WORD} to confirm.`}
+    >
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <input className="imp-input" aria-label={`Type ${CONFIRM_WORD} to confirm`} value={typed} onChange={(e) => setTyped(e.target.value)} autoComplete="off" style={{ maxWidth: 160 }} />
+        <button type="button" className="btn btn-sm" disabled={busy || typed.trim() !== CONFIRM_WORD} onClick={onDelete}>
+          Delete permanently
+        </button>
+        <button type="button" className="btn btn-text" disabled={busy} onClick={() => { setOpen(false); setTyped(''); }}>
+          Cancel
+        </button>
+      </div>
+    </SettingRow>
+  );
+}
+
 export function AccountSection({ mobile }: { mobile?: boolean }) {
+  const [legal, setLegal] = useState<LegalDoc | null>(null);
+  const [usage, setUsage] = useState<StorageUsage | null>(null);
   const { status, user } = useAuth();
   const sync = useSyncStatus();
   const [mode, setMode] = useState<Mode>('sign-in');
@@ -29,6 +84,17 @@ export function AccountSection({ mobile }: { mobile?: boolean }) {
   const [name, setName] = useState('');
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState<{ text: string; error?: boolean } | null>(null);
+
+  const userId = user?.id;
+  useEffect(() => {
+    if (!userId) {
+      setUsage(null);
+      return;
+    }
+    let cancelled = false;
+    getStorageUsage().then((u) => !cancelled && setUsage(u), () => undefined);
+    return () => { cancelled = true; };
+  }, [userId, sync.lastSyncedAt]);
 
   const run = async (fn: () => Promise<string | void>) => {
     setBusy(true);
@@ -94,12 +160,19 @@ export function AccountSection({ mobile }: { mobile?: boolean }) {
               </button>
             )}
           </SettingRow>
+          {usage && (
+            <SettingRow title="Cloud storage" desc={sync.quotaExceeded ? 'You’ve reached your limit. New books won’t upload until you free up space; everything else keeps syncing.' : undefined}>
+              <StorageMeter usage={usage} />
+            </SettingRow>
+          )}
           <SettingRow
             title="Books on this device are kept"
             desc="The first time you sign in, your library here is merged with your account — nothing is deleted. If something was changed in both places, the most recent change wins."
           />
+          <DeleteAccount busy={busy} onDelete={() => void run(async () => { await deleteAccount(); setNote({ text: 'Your account was deleted. Your library is still on this device.' }); })} />
         </div>
         {noteEl}
+        <div style={{ marginTop: 16 }}><LegalLinks onOpen={setLegal} /></div>
       </>
     );
   } else {
@@ -140,6 +213,7 @@ export function AccountSection({ mobile }: { mobile?: boolean }) {
               {mode === 'sign-in' ? 'Create an account' : 'I have an account'}
             </button>
           </div>
+          {mode === 'sign-up' && <LegalLinks onOpen={setLegal} prefix="By creating an account you agree to the " />}
           {mode === 'sign-in' && (
             <button
               type="button"
@@ -153,7 +227,17 @@ export function AccountSection({ mobile }: { mobile?: boolean }) {
           )}
         </form>
         {noteEl}
+        <div style={{ marginTop: 16 }}><LegalLinks onOpen={setLegal} /></div>
       </>
+    );
+  }
+
+  if (legal) {
+    return (
+      <section aria-labelledby="set-account-h">
+        <SectionHead title="Account" id="set-account-h" hidden={mobile} />
+        <LegalDocument doc={legal} onBack={() => setLegal(null)} />
+      </section>
     );
   }
 

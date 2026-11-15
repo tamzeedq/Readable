@@ -6,9 +6,28 @@ import { supabase } from '../supabase';
 import { deleteBookData, loadBookContent, loadCover, saveBookContent, saveCover } from '../bookStorage';
 import { syncOnce } from './engine';
 import { uploadBookFile, downloadBookFile, deleteBookFile } from './files';
-import { createSyncRunner, createStatusStore, type SyncRunner, type SyncStoreAdapter } from './runner';
+import { createSyncRunner, type DeleteQueue, createStatusStore, type SyncRunner, type SyncStoreAdapter } from './runner';
 
 export const useSyncStatus = createStatusStore();
+
+const DELETE_QUEUE_STORAGE_NAME = 'readable.sync.pendingFileDeletes';
+const deleteQueue: DeleteQueue = {
+  load: () => {
+    try {
+      return JSON.parse(localStorage.getItem(DELETE_QUEUE_STORAGE_NAME) ?? '[]');
+    } catch {
+      return [];
+    }
+  },
+  save: (items) => {
+    try {
+      if (items.length) localStorage.setItem(DELETE_QUEUE_STORAGE_NAME, JSON.stringify(items));
+      else localStorage.removeItem(DELETE_QUEUE_STORAGE_NAME);
+    } catch {
+      /* storage unavailable: retry is best-effort */
+    }
+  },
+};
 
 let runner: SyncRunner | null = null;
 let started = false;
@@ -38,6 +57,7 @@ function buildRunner(): SyncRunner | null {
   return createSyncRunner({
     store: storeAdapter,
     status: useSyncStatus,
+    deleteQueue,
     userId: () => useAuth.getState().user?.id ?? null,
     syncOnce: (local, cursor) => syncOnce(client, local, cursor),
     files: {
@@ -68,6 +88,7 @@ export function initSync(): void {
       r.stop();
       // Detach this device's sync position from the account; the local library stays.
       applyFromSync({ syncCursor: null, bookFiles: {}, syncUserId: null });
+      deleteQueue.save([]);
     }
   };
   useAuth.subscribe(onAuth);
