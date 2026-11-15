@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { decodeText, normalizeText, parsePastedText, parsePlainText, parseTxt, titleFromFilename, tokenize } from './parser';
+import { readFileSync } from 'node:fs';
+import { decodeText, normalizeText, parseEpub, parsePastedText, parsePdfTextItems, parsePlainText, parseTxt, titleFromFilename, tokenize } from './parser';
+import type { PdfTextItem } from './parser';
+
+const fixture = (name: string) => readFileSync(`src/lib/__fixtures__/${name}`);
 
 describe('tokenize / normalizeText', () => {
   it('strips invisible chars and normalizes newlines', () => {
@@ -70,5 +74,77 @@ describe('decodeText / parseTxt', () => {
     expect(b.title).toBe('Greeting');
     expect(b.words).toHaveLength(4);
     expect(seen[seen.length - 1]).toBe(100);
+  });
+});
+
+describe('PDF cleanup (fixture)', () => {
+  async function load() {
+    const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+    const doc = await pdfjs.getDocument({ data: new Uint8Array(fixture('running-furniture.pdf')), isEvalSupported: false }).promise;
+    const pages: PdfTextItem[][] = [];
+    for (let i = 1; i <= doc.numPages; i++) {
+      const content = await (await doc.getPage(i)).getTextContent();
+      pages.push(content.items as unknown as PdfTextItem[]);
+    }
+    return parsePdfTextItems(pages);
+  }
+
+  it('drops running headers, page numbers and footnote blocks', async () => {
+    const text = (await load()).words.join(' ');
+    expect(text).not.toMatch(/SYNTHETIC|TREATISE/i);
+    expect(text).not.toMatch(/\bPage \d/);
+    expect(text).not.toContain('footnote');
+    expect(text).toContain('reading speed and comfort for every kind of reader.');
+  });
+
+  it('rejoins hyphenated line breaks but keeps real hyphens', async () => {
+    const words = (await load()).words;
+    expect(words).toContain('recognition');
+    expect(words).toContain('example');
+    expect(words).toContain('well-known');
+    expect(words).toContain('state-of-the-art');
+    expect(words).not.toContain('recog-');
+  });
+
+  it('strips glued footnote markers and keeps paragraph breaks', async () => {
+    const r = await load();
+    expect(r.words).toContain('comfort');
+    expect(r.words).not.toContain('comfort1');
+    expect(r.paragraphStarts.length).toBeGreaterThanOrEqual(4);
+  });
+});
+
+describe('EPUB cleanup (fixture)', () => {
+  async function load() {
+    const file = new File([new Uint8Array(fixture('notes.epub'))], 'notes.epub');
+    return parseEpub(file);
+  }
+
+  it('keeps footnote and endnote bodies and markers out of the text', async () => {
+    const b = await load();
+    const text = b.words.join(' ');
+    expect(text).not.toMatch(/FOOTNOTEBODY|ENDNOTEBODY/);
+    expect(text).not.toMatch(/SECRETHIDDEN|ARIAHIDDEN/);
+    expect(b.words).toContain('follows');
+    expect(b.words).not.toContain('follows2');
+    expect(b.words).toContain('patience.');
+    expect(b.words).toContain('endnote.');
+    expect(b.words).not.toContain('endnote.3');
+  });
+
+  it('removes soft hyphens and non-breaking spaces, keeps real hyphens and non-note superscripts', async () => {
+    const b = await load();
+    expect(b.words.join('')).not.toContain('\u00AD');
+    expect(b.words.join('')).not.toContain('\u00A0');
+    expect(b.words).toContain('reading');
+    expect(b.words).toContain('it');
+    expect(b.words).toContain('well-known');
+    expect(b.words).toContain('state-of-the-art');
+    expect(b.words.join(' ')).toContain('102 is kept');
+  });
+
+  it('builds chapters from the TOC without a notes entry', async () => {
+    const b = await load();
+    expect(b.chapters.map((c) => c.title)).toEqual(['First Chapter', 'Second Chapter']);
   });
 });

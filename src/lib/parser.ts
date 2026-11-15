@@ -228,6 +228,7 @@ function joinLines(lines: string[]): string {
     const line = raw.trim();
     if (!line) continue;
     if (!out) out = line;
+    else if (out.endsWith('\u00AD')) out = out.slice(0, -1) + line;
     else if (/\p{L}-$/u.test(out) && /^\p{Ll}/u.test(line)) out = out.slice(0, -1) + line;
     else out += ' ' + line;
   }
@@ -449,6 +450,11 @@ const BLOCK_TAGS = new Set([
   'p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'ul', 'ol', 'dl', 'dt', 'dd', 'blockquote', 'section', 'article', 'header', 'footer',
   'aside', 'figure', 'figcaption', 'pre', 'table', 'tr', 'td', 'th', 'caption', 'hr', 'main', 'body', 'center', 'address', 'hgroup', 'details', 'summary',
 ]);
+/** epub:type / ARIA role values for notes, note markers and print page markers */
+const NOTE_TYPE_RE = /\b(footnotes?|endnotes?|rearnotes?|notes?|noteref|pagebreak|doc-footnote|doc-endnotes?|doc-footnotes|doc-noteref|doc-pagebreak|doc-backlink)\b/;
+/** Superscript content that is just a note marker: 12, [3], *, † */
+const NOTE_MARK_RE = /^[[(]?(\d{1,3}|[*\u2020\u2021\u00A7]+)[\])]?$/;
+const NOTE_BODY_TAGS = new Set(['li', 'aside', 'div', 'p', 'dd', 'section', 'blockquote']);
 const HEADING_TAGS = new Set(['h1', 'h2', 'h3', 'h4', 'h5', 'h6']);
 
 interface PendingImage {
@@ -469,6 +475,7 @@ function walkDocument(
   b: TextBuilder,
   anchors: Map<string, number>,
   images: PendingImage[],
+  noteTargets: ReadonlySet<string> = new Set(),
 ): DocWalkResult {
   const baseDir = dirOf(docPath);
   const body = doc.body ?? doc.getElementsByTagName('body')[0] ?? doc.documentElement;
@@ -502,9 +509,24 @@ function walkDocument(
     const el = node as Element;
     const tag = el.localName.toLowerCase();
     if (SKIP_TAGS.has(tag)) return;
-    const epubType = el.getAttribute('epub:type') ?? '';
-    if (/\bnoteref\b|\bpagebreak\b/.test(epubType)) return;
-    if (el.getAttribute('aria-hidden') === 'true' && !el.textContent?.trim()) return;
+    const epubType = `${el.getAttribute('epub:type') ?? ''} ${el.getAttribute('role') ?? ''}`;
+    if (NOTE_TYPE_RE.test(epubType)) return;
+    if (tag === 'aside' && !/\b(sidebar|pullquote|tip|warning|example|doc-tip|doc-pullquote)\b/.test(epubType)) return;
+    const elId = el.getAttribute('id');
+    if (elId && noteTargets.has(elId) && NOTE_BODY_TAGS.has(tag)) return;
+    if (
+      el.hasAttribute('hidden') ||
+      el.getAttribute('aria-hidden') === 'true' ||
+      /display\s*:\s*none|visibility\s*:\s*hidden/i.test(el.getAttribute('style') ?? '')
+    ) {
+      return;
+    }
+    if (tag === 'sup' || tag === 'sub') {
+      const txt = (el.textContent ?? '').trim();
+      // Footnote call-outs: a superscript link, or a bare number glued to the end of a word
+      if (el.getElementsByTagName('a').length && txt.length <= 6) return;
+      if (NOTE_MARK_RE.test(txt) && /[\p{L}.,;:!?)”’"'*]$/u.test(buffer.replace(INVISIBLE_RE, ''))) return;
+    }
 
     if (tag === 'img' || tag === 'image') {
       const href = el.getAttribute('src') ?? el.getAttribute('xlink:href') ?? el.getAttributeNS('http://www.w3.org/1999/xlink', 'href') ?? el.getAttribute('href');
@@ -521,7 +543,7 @@ function walkDocument(
 
     const isBlock = BLOCK_TAGS.has(tag);
     if (isBlock) flush();
-    const id = el.getAttribute('id');
+    const id = elId;
     if (id) {
       const key = `${docPath}#${id}`;
       if (!anchors.has(key)) anchors.set(key, b.words.length + (buffer.trim() ? countTokens(buffer) : 0));
@@ -689,6 +711,21 @@ export async function parseEpub(file: File, onProgress?: ProgressFn): Promise<Pa
   const pendingImages: PendingImage[] = [];
   const seen = new Set<string>();
 
+  // Ids that note call-outs point at (footnote/endnote bodies), found with a cheap scan before parsing
+  const noteTargets = new Set<string>();
+  for (const item of spine) {
+    const raw = await loadText(zip, item.path);
+    if (!raw) continue;
+    for (const m of raw.matchAll(/<a\b[^>]*>/gi)) {
+      const tagText = m[0];
+      const href = /href\s*=\s*["']([^"']*)["']/i.exec(tagText)?.[1];
+      const frag = href?.split('#')[1];
+      if (!frag) continue;
+      if (/noteref/i.test(tagText)) noteTargets.add(frag);
+    }
+    for (const m of raw.matchAll(/<sup\b[^>]*>\s*<a\b[^>]*href\s*=\s*["'][^"']*#([^"']+)["']/gi)) noteTargets.add(m[1]);
+  }
+
   for (let i = 0; i < spine.length; i++) {
     const item = spine[i];
     if (seen.has(item.path)) continue;
@@ -699,15 +736,19 @@ export async function parseEpub(file: File, onProgress?: ProgressFn): Promise<Pa
     const doc = parseXml(text, /html/i.test(item.mediaType) && !/xhtml/i.test(item.mediaType) ? 'text/html' : 'application/xhtml+xml');
     const start = b.words.length;
     docStarts.set(item.path, start);
-    const { heading } = walkDocument(doc, item.path, b, anchors, pendingImages);
+    const { heading } = walkDocument(doc, item.path, b, anchors, pendingImages, noteTargets);
     docHeadings.push({ path: item.path, start, end: b.words.length, heading });
     if (i % 4 === 3) await yieldToUi();
   }
 
   // Chapters from the TOC, else one per spine document
+  const seenAt = new Set<number>();
   for (const entry of toc) {
+    if (/^(table of )?contents$|^cover$|^(end|foot)?notes$/i.test(entry.title)) continue;
     const at = (entry.fragment ? anchors.get(`${entry.path}#${entry.fragment}`) : undefined) ?? docStarts.get(entry.path);
-    if (at !== undefined) b.chapters.push({ title: entry.title, startWord: at });
+    if (at === undefined || at >= b.words.length || seenAt.has(at)) continue;
+    seenAt.add(at);
+    b.chapters.push({ title: entry.title, startWord: at });
   }
   if (b.chapters.length < 1) {
     let n = 0;
@@ -780,7 +821,7 @@ function loadPdfjs(): Promise<PdfjsModule> {
   return pdfjsPromise;
 }
 
-interface PdfLine {
+export interface PdfLine {
   text: string;
   x: number;
   y: number;
@@ -788,7 +829,7 @@ interface PdfLine {
   size: number;
 }
 
-interface PdfTextItem {
+export interface PdfTextItem {
   str: string;
   transform: number[];
   width: number;
@@ -811,6 +852,12 @@ function linesFromItems(items: PdfTextItem[]): PdfLine[] {
       continue;
     }
     const sameLine = cur && !forceBreak && Math.abs(y - cur.y) < Math.max(cur.size, size) * 0.45;
+    // Footnote call-outs: a small raised number/symbol glued to the end of a word
+    if (sameLine && cur && size < cur.size * 0.8 && NOTE_MARK_RE.test(str.trim()) && /[\p{L}.,;:!?)”’"'*]$/u.test(cur.text)) {
+      prevEnd = x + it.width;
+      forceBreak = !!it.hasEOL;
+      continue;
+    }
     if (!sameLine) {
       if (cur && cur.text.trim()) lines.push(cur);
       cur = { text: str, x, y, right: x + it.width, size };
@@ -834,14 +881,48 @@ function median(nums: number[]): number {
   return s[Math.floor(s.length / 2)];
 }
 
-/** Group a page's lines into paragraphs. Returns paragraph strings and whether the last one looks unfinished. */
-function paragraphsFromLines(lines: PdfLine[]): string[] {
-  // Drop page numbers / running heads that are just numbers
-  const body = lines.filter((l, i) => {
-    const t = l.text.trim();
-    const edge = i === 0 || i === lines.length - 1;
-    return !(edge && /^(page\s+)?\d{1,4}(\s+of\s+\d+)?$/i.test(t));
+const PDF_PAGE_NUMBER_RE = /^(page\s+)?[-–—\s]*(\d{1,4}|[ivxlcdm]{1,7})[-–—\s]*(of\s+\d+)?$/i;
+
+function furnitureKey(t: string): string {
+  return t.trim().toLowerCase().replace(/\d+/g, '#').replace(/\s+/g, ' ');
+}
+
+/** Keys of lines that repeat at the top/bottom of many pages (running headers, footers, page numbers). */
+export function findRunningFurniture(pages: PdfLine[][]): Set<string> {
+  const keys = new Set<string>();
+  if (pages.length < 3) return keys;
+  const counts = new Map<string, number>();
+  for (const lines of pages) {
+    const edge = new Set<string>();
+    for (const l of [...lines.slice(0, 2), ...lines.slice(-2)]) {
+      const k = furnitureKey(l.text);
+      if (k) edge.add(k);
+    }
+    for (const k of edge) counts.set(k, (counts.get(k) ?? 0) + 1);
+  }
+  const min = Math.max(3, Math.ceil(pages.length * 0.4));
+  for (const [k, n] of counts) if (n >= min) keys.add(k);
+  return keys;
+}
+
+/** Remove running heads/feet, page numbers and footnote blocks (small type at the page bottom) from one page. */
+function cleanPageLines(lines: PdfLine[], furniture: ReadonlySet<string>): PdfLine[] {
+  let body = lines.filter((l, i) => {
+    const edge = i < 2 || i >= lines.length - 2;
+    if (!edge) return true;
+    if (furniture.has(furnitureKey(l.text))) return false;
+    const atEnd = i === 0 || i === lines.length - 1;
+    return !(atEnd && PDF_PAGE_NUMBER_RE.test(l.text.trim()));
   });
+  const bodySize = median(body.map((l) => l.size));
+  let cut = body.length;
+  while (cut > 1 && body[cut - 1].size < bodySize * 0.88) cut--;
+  if (cut < body.length && body.length - cut <= Math.ceil(body.length * 0.4)) body = body.slice(0, cut);
+  return body;
+}
+
+/** Group a page's lines into paragraphs. */
+function paragraphsFromLines(body: PdfLine[]): string[] {
   if (!body.length) return [];
   const gaps: number[] = [];
   for (let i = 1; i < body.length; i++) {
@@ -873,6 +954,42 @@ function paragraphsFromLines(lines: PdfLine[]): string[] {
   }
   if (cur.length) paras.push(joinLines(cur));
   return paras.filter((p) => p.trim());
+}
+
+/** Turn per-page lines into paragraphs in the builder; returns the first word index of each page. */
+export function assemblePdfPages(pageLines: PdfLine[][], b: TextBuilder): number[] {
+  const furniture = findRunningFurniture(pageLines);
+  const pageStart: number[] = [];
+  let carry = ''; // paragraph that may continue on the next page
+  for (let p = 0; p < pageLines.length; p++) {
+    const paras = paragraphsFromLines(cleanPageLines(pageLines[p], furniture));
+    pageStart[p] = b.words.length + (carry ? countTokens(carry) : 0);
+    for (let i = 0; i < paras.length; i++) {
+      let para = paras[i];
+      if (i === 0 && carry) {
+        // Continue a sentence broken across the page boundary
+        if (/^\p{Ll}/u.test(para) || /\p{L}-$/u.test(carry)) {
+          para = /\p{L}-$/u.test(carry) && /^\p{Ll}/u.test(para) ? carry.slice(0, -1) + para : carry + ' ' + para;
+        } else {
+          b.addParagraph(carry);
+        }
+        carry = '';
+        pageStart[p] = b.words.length;
+      }
+      if (i === paras.length - 1 && !/[.!?:"”’)]$/.test(para.trim())) carry = para;
+      else b.addParagraph(para);
+    }
+  }
+  if (carry) b.addParagraph(carry);
+  return pageStart;
+}
+
+/** Test seam: assemble raw pdf.js text items (one array per page) into a book body. */
+export function parsePdfTextItems(pages: PdfTextItem[][]): Pick<ParsedBook, 'words' | 'paragraphStarts' | 'chapters'> {
+  const b = new TextBuilder();
+  assemblePdfPages(pages.map(linesFromItems), b);
+  const { words, paragraphStarts, chapters } = b.finish();
+  return { words, paragraphStarts, chapters };
 }
 
 function looksLikeJunkTitle(t: string | undefined): boolean {
@@ -908,37 +1025,17 @@ export async function parsePdf(file: File, onProgress?: ProgressFn): Promise<Par
       /* metadata is optional */
     }
 
-    const b = new TextBuilder();
-    const pageStart: number[] = [];
-    let carry = ''; // paragraph that may continue on the next page
-
+    const pageLines: PdfLine[][] = [];
     for (let p = 1; p <= numPages; p++) {
-      onProgress?.({ percent: Math.max(1, Math.round(((p - 1) / numPages) * 95)), detail: `extracting text, page ${p} of ${numPages}` });
+      onProgress?.({ percent: Math.max(1, Math.round(((p - 1) / numPages) * 90)), detail: `extracting text, page ${p} of ${numPages}` });
       const page = await pdf.getPage(p);
       const content = await page.getTextContent();
-      const items = (content.items as unknown[]).filter((it): it is PdfTextItem => typeof (it as PdfTextItem).str === 'string');
-      const paras = paragraphsFromLines(linesFromItems(items));
+      pageLines.push(linesFromItems((content.items as unknown[]).filter((it): it is PdfTextItem => typeof (it as PdfTextItem).str === 'string')));
       page.cleanup();
-
-      pageStart[p - 1] = b.words.length + (carry ? countTokens(carry) : 0);
-      for (let i = 0; i < paras.length; i++) {
-        let para = paras[i];
-        if (i === 0 && carry) {
-          // Continue a sentence broken across the page boundary
-          if (/^\p{Ll}/u.test(para) || /\p{L}-$/u.test(carry)) {
-            para = /\p{L}-$/u.test(carry) && /^\p{Ll}/u.test(para) ? carry.slice(0, -1) + para : carry + ' ' + para;
-          } else {
-            b.addParagraph(carry);
-          }
-          carry = '';
-          pageStart[p - 1] = b.words.length;
-        }
-        if (i === paras.length - 1 && !/[.!?:"”’)]$/.test(para.trim())) carry = para;
-        else b.addParagraph(para);
-      }
       if (p % 8 === 0) await yieldToUi();
     }
-    if (carry) b.addParagraph(carry);
+    const b = new TextBuilder();
+    const pageStart = assemblePdfPages(pageLines, b);
 
     const pagesWithText = b.words.length;
     if (pagesWithText < 20 || (numPages >= 4 && pagesWithText / numPages < 8)) {
