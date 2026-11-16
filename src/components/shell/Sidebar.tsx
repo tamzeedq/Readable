@@ -29,6 +29,8 @@ export const NAV_ITEMS: { screen: Screen; label: string; Icon: typeof House }[] 
 
 export const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform);
 export const MOD_KEY_LABEL = isMac ? '⌘K' : 'Ctrl K';
+/** aria-keyshortcuts value for the search shortcut */
+export const MOD_KEY_ARIA = isMac ? 'Meta+K' : 'Control+K';
 
 export function Sidebar({ onNewShelf }: { onNewShelf: () => void }) {
   const screen = useAppStore((s) => s.screen);
@@ -99,10 +101,16 @@ export function Sidebar({ onNewShelf }: { onNewShelf: () => void }) {
         </button>
       </div>
 
-      <button className="sidebar-search" aria-label="Search books and actions" onClick={() => openOverlay('search')}>
+      {/* Name comes from the visible "Search" text (WCAG 2.5.3 label-in-name); the shortcut is exposed via aria-keyshortcuts */}
+      <button
+        className="sidebar-search"
+        title="Search books and actions"
+        aria-keyshortcuts={MOD_KEY_ARIA}
+        onClick={() => openOverlay('search')}
+      >
         <Search size={17} strokeWidth={1.6} aria-hidden="true" />
         <span>Search</span>
-        <kbd>{MOD_KEY_LABEL}</kbd>
+        <kbd aria-hidden="true">{MOD_KEY_LABEL}</kbd>
       </button>
 
       <nav aria-label="Main" className="sidebar-nav">

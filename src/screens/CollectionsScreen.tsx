@@ -68,16 +68,10 @@ function ShelfCard({ shelf, books, mobile }: { shelf: Shelf; books: Book[]; mobi
   };
 
   return (
-    <div
-      className={`col-card ${mobile ? 'is-mobile' : ''}`}
-      role="link"
-      tabIndex={0}
-      aria-label={`${shelf.name}, ${plural(books.length, 'book')}`}
-      onClick={open}
-      onKeyDown={(e) => {
-        if (e.target === e.currentTarget && e.key === 'Enter') open();
-      }}
-    >
+    // The whole card is clickable with a mouse; keyboard and screen-reader users get a real button
+    // on the shelf name (a role="link" wrapper can't contain the options button, and its label
+    // couldn't match the card's visible text — WCAG 2.5.3).
+    <div className={`col-card ${mobile ? 'is-mobile' : ''}`} onClick={open}>
       <SpineShelf books={books} color={shelf.color} mobile={mobile} />
       <div className="col-card-text">
         <div className="col-card-head">
@@ -101,9 +95,15 @@ function ShelfCard({ shelf, books, mobile }: { shelf: Shelf; books: Book[]; mobi
               }}
             />
           ) : (
-            <h2>{shelf.name}</h2>
+            <h2>
+              <button type="button" className="col-card-open" aria-describedby={`col-count-${shelf.id}`}>
+                {shelf.name}
+              </button>
+            </h2>
           )}
-          <span className="col-card-count">{plural(books.length, 'book')}</span>
+          <span className="col-card-count" id={`col-count-${shelf.id}`}>
+            {plural(books.length, 'book')}
+          </span>
           <button
             type="button"
             ref={menu.anchorRef}

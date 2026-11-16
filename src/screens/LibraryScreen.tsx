@@ -286,11 +286,12 @@ function MobileTile({ book }: { book: Book }) {
       className="lib-m-tile"
       role="button"
       tabIndex={0}
-      aria-label={`${book.title} — details`}
+      title={`${book.title} — details`}
       onClick={open}
       onKeyDown={openOnKey(open)}
     >
-      <Cover book={book} titleSize={14} authorSize={7} />
+      {/* Accessible name comes from the visible title + status (WCAG 2.5.3); the cover repeats the title */}
+      <Cover book={book} titleSize={14} authorSize={7} decorative />
       <div className="lib-m-tile-title">{book.title}</div>
       <div className="lib-m-tile-progress">
         <ProgressBar percent={bookPercent(book)} />
