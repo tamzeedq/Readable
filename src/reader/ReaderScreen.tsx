@@ -291,7 +291,7 @@ function ReaderView({ book, content }: { book: Book; content: BookContent }) {
       style={rootStyle}
       onPointerMove={onPointerMove}
     >
-      <StageStatus engine={engine} playing={playing} />
+      <StageStatus engine={engine} playing={playing} chapters={book.chapters} />
       <ReaderHeader
         engine={engine}
         book={book}
