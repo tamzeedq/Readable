@@ -64,3 +64,26 @@ describe('store stamping', () => {
     expect(st().stamps).toBe(before);
   });
 });
+
+describe('v3 → v4 migration', () => {
+  it('loads v3 state with onboarded defaulted to false and no data loss', async () => {
+    const stamps = { 'book:b1': { updatedAt: '2026-01-01T00:00:00.000Z', pending: false } };
+    localStorage.setItem(
+      'readable-v1',
+      JSON.stringify({ state: { books: [makeBook('b1', { progressWordIndex: 9 })], shelves: [], stamps, readingPrefs: { defaultWpm: 410 }, syncCursor: 'c' }, version: 3 }),
+    );
+    const { useAppStore } = await import('./appStore');
+    const s = useAppStore.getState();
+    expect(s.onboarded).toBe(false);
+    expect(s.books[0].progressWordIndex).toBe(9);
+    expect(s.readingPrefs.defaultWpm).toBe(410);
+    expect(s.stamps['book:b1']).toEqual(stamps['book:b1']);
+    expect(s.syncCursor).toBe('c');
+  });
+
+  it('persists onboarded', async () => {
+    const { useAppStore } = await import('./appStore');
+    useAppStore.getState().setOnboarded(true);
+    expect(JSON.parse(localStorage.getItem('readable-v1')!).state.onboarded).toBe(true);
+  });
+});

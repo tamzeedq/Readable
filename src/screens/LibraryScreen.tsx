@@ -353,7 +353,7 @@ export function LibraryScreen() {
   const noResults = (
     <div className="bk-empty">
       <h2>No books match</h2>
-      <p>Try a different search or loosen the filters.</p>
+      <p>Nothing in your library matches. Try different words, or loosen the filters to see everything again.</p>
       <button type="button" className="btn" onClick={clearFilters}>
         Clear filters
       </button>

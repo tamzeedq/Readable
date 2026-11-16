@@ -13,6 +13,8 @@ import { ReaderScreen } from './reader/ReaderScreen';
 import { SearchOverlay } from './overlays/SearchOverlay';
 import { ImportModal } from './overlays/ImportModal';
 import { BookDetails } from './overlays/BookDetails';
+import { Onboarding } from './overlays/Onboarding';
+import { ShortcutsHelp } from './overlays/ShortcutsHelp';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import { Toaster, notify } from './components/ui/Toaster';
 import { isQuotaError } from './lib/bookStorage';
@@ -91,6 +93,15 @@ function AppShell() {
         openOverlay('search');
         return;
       }
+      if (e.key === '?' && !e.metaKey && !e.ctrlKey && !e.altKey && !e.defaultPrevented) {
+        const t = e.target as HTMLElement | null;
+        if (t?.closest?.('input, textarea, select, [contenteditable="true"], [contenteditable=""]')) return;
+        if (useAppStore.getState().overlay === 'none') {
+          e.preventDefault();
+          openOverlay('shortcuts');
+        }
+        return;
+      }
       if (e.key === 'Escape' && useAppStore.getState().overlay !== 'none') {
         closeOverlay();
       }
@@ -98,6 +109,12 @@ function AppShell() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [openOverlay, closeOverlay]);
+
+  // First run: show the intro once, to people who haven't got books yet.
+  useEffect(() => {
+    const st = useAppStore.getState();
+    if (!st.onboarded && st.books.length === 0) st.openOverlay('onboarding');
+  }, []);
 
   const isReader = screen === 'reader';
   const bookKey = useAppStore((s) => s.activeBookId);
@@ -125,6 +142,8 @@ function AppShell() {
 
       {overlay === 'search' && <SearchOverlay />}
       {(overlay === 'import' || overlay === 'paste') && <ImportModal />}
+      {overlay === 'shortcuts' && <ShortcutsHelp />}
+      {overlay === 'onboarding' && <Onboarding />}
       {overlay === 'details' && <BookDetails />}
       {newShelfOpen && <NewShelfDialog onClose={() => setNewShelfOpen(false)} />}
       <Toaster />

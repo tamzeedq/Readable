@@ -44,7 +44,7 @@ export function WelcomeCard({
         <h2>{title}</h2>
         <p>
           Readable shows a book one word at a time, at a pace you choose, so your eyes stay still and
-          the words come to you. Add an EPUB, PDF or text file to begin.
+          the words come to you. Add an EPUB, PDF or text file to begin, or start with a sample. Press ? any time to see the shortcuts.
         </p>
         <div className="bk-welcome-actions">
           <button type="button" className={`btn btn-primary ${mobile ? '' : 'btn-lg'}`} onClick={() => openOverlay('import')}>
@@ -56,9 +56,14 @@ export function WelcomeCard({
             Paste text
           </button>
         </div>
-        <button type="button" className="btn btn-text bk-welcome-sample" onClick={addSamples} disabled={adding}>
-          {adding ? 'Adding sample books…' : failed ? 'Couldn’t add samples — try again' : 'Or add a few sample books'}
-        </button>
+        <div className="bk-welcome-links">
+          <button type="button" className="btn btn-text bk-welcome-sample" onClick={addSamples} disabled={adding}>
+            {adding ? 'Adding sample books…' : failed ? 'Couldn’t add samples — try again' : 'Or add a few sample books'}
+          </button>
+          <button type="button" className="btn btn-text" onClick={() => openOverlay('onboarding')}>
+            How it works
+          </button>
+        </div>
       </div>
     </section>
   );

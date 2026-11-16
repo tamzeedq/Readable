@@ -150,7 +150,7 @@ export function StatsScreen() {
           </div>
           <BarChart bars={m.bars} mobile={isMobile} />
           {!m.hasAnyData && (
-            <p className="st-empty">Nothing logged yet. Time spent reading will gather here, a day at a time.</p>
+            <p className="st-empty">Nothing logged yet. Read for a few minutes and your time, words and streak will gather here, a day at a time.</p>
           )}
         </section>
 
@@ -158,7 +158,7 @@ export function StatsScreen() {
           <h2>By book</h2>
           {m.byBook.length === 0 ? (
             <p className="st-empty">
-              {m.hasAnyData ? 'No reading in this period.' : 'The books you read will be listed here.'}
+              {m.hasAnyData ? 'No reading in this period.' : 'Books you read will be listed here. Open one from your library to begin.'}
             </p>
           ) : (
             <ul>

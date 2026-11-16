@@ -89,6 +89,10 @@ export interface AppState {
   sidebarCollapsed: boolean;
   setSidebarCollapsed: (collapsed: boolean) => void;
 
+  /** Whether the first-run intro has been shown (persisted; reset by "Show intro again" only opens it) */
+  onboarded: boolean;
+  setOnboarded: (v: boolean) => void;
+
   // ---- Stats (persisted) ----
   readingLog: ReadingLog;
   /** Record reading time and words for a book on today's date */
@@ -121,6 +125,7 @@ export interface AppState {
 }
 
 /**
+ * v3 → v4 adds `onboarded` (defaults to false via the store default; no data is touched).
  * v1 → v2 adds the sync bookkeeping fields. Existing data is untouched; entities with no stamp are
  * treated as changed-at-epoch, so the first sync merges them into the account without overriding it.
  */
@@ -133,6 +138,7 @@ export function migratePersisted(persisted: unknown, version: number): unknown {
     const stamps = (out.stamps ?? {}) as SyncStamps;
     out = { ...out, stamps: Object.fromEntries(Object.entries(stamps).map(([k, v]) => [k, { ...v, pending: true }])) };
   }
+  // v3 → v4: `onboarded` is additive; absent means false (merge keeps the store default)
   return out;
 }
 
@@ -236,6 +242,8 @@ export const useAppStore = create<AppState>()(
       setTheme: (theme) => set({ theme }),
       setPalette: (palette) => set({ palette }),
       sidebarCollapsed: false,
+      onboarded: false,
+      setOnboarded: (onboarded) => set({ onboarded }),
       setSidebarCollapsed: (sidebarCollapsed) => set({ sidebarCollapsed }),
 
       // ---- Stats ----
@@ -285,7 +293,7 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'readable-v1',
-      version: 3,
+      version: 4,
       migrate: migratePersisted,
       partialize: (s) => ({
         books: s.books,
@@ -295,6 +303,7 @@ export const useAppStore = create<AppState>()(
         theme: s.theme,
         palette: s.palette,
         sidebarCollapsed: s.sidebarCollapsed,
+        onboarded: s.onboarded,
         readingLog: s.readingLog,
         stamps: s.stamps,
         bookFiles: s.bookFiles,
