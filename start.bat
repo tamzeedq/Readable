@@ -1,10 +1,10 @@
 @echo off
-REM ReadFlow App Quick Start Script for Windows
+REM Readable App Quick Start Script for Windows
 
 cls
 echo.
 echo  ======================================
-echo  ReadFlow - Speed Reading App
+echo  Readable - Speed Reading App
 echo  ======================================
 echo.
 

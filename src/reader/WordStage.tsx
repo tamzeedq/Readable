@@ -1,4 +1,5 @@
 import { memo, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import type { Chapter } from '../types';
 import type { ReaderEngine } from './engine';
 import { selIndex, useEngine } from './useReader';
 import { bionicLength, focalIndex, splitWord } from './text';
@@ -120,18 +121,34 @@ export const WordStage = memo(function WordStage({ engine, look }: { engine: Rea
   );
 });
 
-/** Screen-reader status: announces the current word + position when paused. */
-export function StageStatus({ engine, playing }: { engine: ReaderEngine; playing: boolean }) {
+/**
+ * Screen-reader status. The word stage itself is aria-hidden and never announced, so playback is silent;
+ * this region only speaks on play/pause transitions (state, chapter and position), never per word.
+ */
+export function StageStatus({
+  engine,
+  playing,
+  chapters = [],
+}: {
+  engine: ReaderEngine;
+  playing: boolean;
+  chapters?: Chapter[];
+}) {
   const [msg, setMsg] = useState('');
+  const first = useRef(true);
   useEffect(() => {
-    if (playing) return;
     const s = engine.getState();
     const w = engine.words[s.index] ?? '';
-    setMsg(`Paused at “${w}”, word ${s.index + 1} of ${engine.wordCount}`);
-  }, [engine, playing]);
+    const chapter = [...chapters].reverse().find((c) => c.startWord <= s.index)?.title;
+    const where = `${chapter ? `${chapter}, ` : ''}word ${s.index + 1} of ${engine.wordCount}`;
+    if (playing) setMsg(`Playing at ${s.wpm} words per minute`);
+    else if (first.current) setMsg(`Ready. ${where}. Press space to play.`);
+    else setMsg(`Paused at “${w}”, ${where}`);
+    first.current = false;
+  }, [engine, playing, chapters]);
   return (
-    <div className="sr-only" role="status" aria-live="polite">
-      {playing ? '' : msg}
+    <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+      {msg}
     </div>
   );
 }

@@ -1,4 +1,6 @@
 import { memo, useMemo } from 'react';
+import { HelpCircle, Keyboard } from 'lucide-react';
+import { useAppStore } from '../store/appStore';
 import type { Chapter } from '../types';
 import { formatNumber, formatTimeLeft } from '../lib/format';
 import type { ReaderEngine } from './engine';
@@ -171,6 +173,7 @@ function TBtn({ label, onClick, children, mobile }: { label: string; onClick: ()
 }
 
 export function Transport({ engine, actions, mobile }: { engine: ReaderEngine; actions: ReaderActions; mobile: boolean }) {
+  const showShortcuts = () => useAppStore.getState().openOverlay('shortcuts');
   if (mobile) {
     return (
       <div className="rd-m-transport">
@@ -179,6 +182,7 @@ export function Transport({ engine, actions, mobile }: { engine: ReaderEngine; a
         <PlayButton engine={engine} actions={actions} mobile />
         <TBtn mobile label="Next word" onClick={actions.nextWord}><NextWordIcon size={20} /></TBtn>
         <TBtn mobile label="Next sentence" onClick={actions.nextSentence}><NextSentenceIcon size={20} /></TBtn>
+        <TBtn mobile label="Controls help" onClick={showShortcuts}><HelpCircle size={20} strokeWidth={1.6} aria-hidden="true" /></TBtn>
       </div>
     );
   }
@@ -192,6 +196,7 @@ export function Transport({ engine, actions, mobile }: { engine: ReaderEngine; a
       <TBtn label="Next word" onClick={actions.nextWord}><NextWordIcon /></TBtn>
       <TBtn label="Next sentence" onClick={actions.nextSentence}><NextSentenceIcon /></TBtn>
       <TBtn label="Next paragraph" onClick={actions.nextParagraph}><NextParaIcon /></TBtn>
+      <TBtn label="Keyboard shortcuts (?)" onClick={showShortcuts}><Keyboard size={18} strokeWidth={1.6} aria-hidden="true" /></TBtn>
     </div>
   );
 }

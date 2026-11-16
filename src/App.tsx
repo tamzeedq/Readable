@@ -13,6 +13,13 @@ import { ReaderScreen } from './reader/ReaderScreen';
 import { SearchOverlay } from './overlays/SearchOverlay';
 import { ImportModal } from './overlays/ImportModal';
 import { BookDetails } from './overlays/BookDetails';
+import { Onboarding } from './overlays/Onboarding';
+import { ShortcutsHelp } from './overlays/ShortcutsHelp';
+import { ErrorBoundary } from './components/ui/ErrorBoundary';
+import { Toaster, notify } from './components/ui/Toaster';
+import { isQuotaError } from './lib/bookStorage';
+import { initAuth } from './lib/auth';
+import { initSync } from './lib/sync/app';
 import './App.css';
 
 /** Applies palette + resolved light/dark theme to <html> so tokens.css can switch. */
@@ -36,8 +43,38 @@ function usePurgeTransientBooks() {
   }, []);
 }
 
-export default function App() {
+/** Surface storage-full errors from places that can't catch them (e.g. the persisted store's localStorage writes). */
+function useStorageErrorNotice() {
+  useEffect(() => {
+    const msg = 'Your device is out of storage space, so recent changes may not be saved. Remove a book or free up space.';
+    const onError = (e: ErrorEvent) => {
+      if (isQuotaError(e.error)) {
+        e.preventDefault();
+        notify(msg, 'error');
+      }
+    };
+    const onRejection = (e: PromiseRejectionEvent) => {
+      if (isQuotaError(e.reason)) {
+        e.preventDefault();
+        notify(msg, 'error');
+      }
+    };
+    window.addEventListener('error', onError);
+    window.addEventListener('unhandledrejection', onRejection);
+    return () => {
+      window.removeEventListener('error', onError);
+      window.removeEventListener('unhandledrejection', onRejection);
+    };
+  }, []);
+}
+
+function AppShell() {
   useThemeAttributes();
+  useStorageErrorNotice();
+  useEffect(() => {
+    initAuth();
+    initSync();
+  }, []);
   usePurgeTransientBooks();
 
   const screen = useAppStore((s) => s.screen);
@@ -56,6 +93,15 @@ export default function App() {
         openOverlay('search');
         return;
       }
+      if (e.key === '?' && !e.metaKey && !e.ctrlKey && !e.altKey && !e.defaultPrevented) {
+        const t = e.target as HTMLElement | null;
+        if (t?.closest?.('input, textarea, select, [contenteditable="true"], [contenteditable=""]')) return;
+        if (useAppStore.getState().overlay === 'none') {
+          e.preventDefault();
+          openOverlay('shortcuts');
+        }
+        return;
+      }
       if (e.key === 'Escape' && useAppStore.getState().overlay !== 'none') {
         closeOverlay();
       }
@@ -64,28 +110,54 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey);
   }, [openOverlay, closeOverlay]);
 
+  // First run: show the intro once, to people who haven't got books yet.
+  useEffect(() => {
+    const st = useAppStore.getState();
+    if (!st.onboarded && st.books.length === 0) st.openOverlay('onboarding');
+  }, []);
+
   const isReader = screen === 'reader';
+  const bookKey = useAppStore((s) => s.activeBookId);
+  const openLibrary = useAppStore((s) => s.openLibrary);
 
   return (
     <div className={`app ${isMobile ? 'is-mobile' : 'is-desktop'}`}>
+      <a className="skip-link" href="#main-content" onClick={(e) => { e.preventDefault(); document.getElementById('main-content')?.focus(); }}>
+        Skip to content
+      </a>
       {!isReader && !isMobile && <Sidebar onNewShelf={() => setNewShelfOpen(true)} />}
 
       <div className="app-main">
-        <main className="app-content" data-screen={screen}>
+        <main className="app-content" id="main-content" tabIndex={-1} data-screen={screen}>
           {screen === 'home' && <HomeScreen />}
           {screen === 'library' && <LibraryScreen />}
           {screen === 'collections' && <CollectionsScreen onNewShelf={() => setNewShelfOpen(true)} />}
           {screen === 'stats' && <StatsScreen />}
           {screen === 'settings' && <SettingsScreen />}
-          {isReader && <ReaderScreen />}
+          {isReader && (
+            <ErrorBoundary scope="reader" resetKey={bookKey} onLibrary={() => openLibrary()}>
+              <ReaderScreen />
+            </ErrorBoundary>
+          )}
         </main>
         {!isReader && isMobile && <TabBar />}
       </div>
 
       {overlay === 'search' && <SearchOverlay />}
       {(overlay === 'import' || overlay === 'paste') && <ImportModal />}
+      {overlay === 'shortcuts' && <ShortcutsHelp />}
+      {overlay === 'onboarding' && <Onboarding />}
       {overlay === 'details' && <BookDetails />}
       {newShelfOpen && <NewShelfDialog onClose={() => setNewShelfOpen(false)} />}
+      <Toaster />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <ErrorBoundary scope="app">
+      <AppShell />
+    </ErrorBoundary>
   );
 }

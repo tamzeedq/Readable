@@ -102,7 +102,7 @@ export type ThemeMode = 'light' | 'dark' | 'system';
 export type Palette = 'sepia' | 'moss';
 
 export type Screen = 'home' | 'library' | 'collections' | 'stats' | 'settings' | 'reader';
-export type Overlay = 'none' | 'search' | 'import' | 'paste' | 'details' | 'appearance';
+export type Overlay = 'none' | 'search' | 'import' | 'paste' | 'details' | 'appearance' | 'shortcuts' | 'onboarding';
 
 export type StatusFilter = 'all' | 'unread' | 'in-progress' | 'finished';
 

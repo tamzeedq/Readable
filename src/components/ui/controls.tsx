@@ -66,12 +66,13 @@ export function Segmented<T extends string | number>({
   );
 }
 
-export function ProgressBar({ percent, height = 3 }: { percent: number; height?: number }) {
+export function ProgressBar({ percent, height = 3, label = 'Reading progress' }: { percent: number; height?: number; label?: string }) {
   return (
     <div
       className="progress"
       style={{ height }}
       role="progressbar"
+      aria-label={label}
       aria-valuenow={Math.round(percent)}
       aria-valuemin={0}
       aria-valuemax={100}

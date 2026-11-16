@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Check, Play, Upload, X } from 'lucide-react';
 import { Modal, Sheet } from '../components/ui/Overlay';
+import { notify } from '../components/ui/Toaster';
 import { useIsMobile } from '../hooks/useMediaQuery';
 import { useAppStore } from '../store/appStore';
 import { IMPORT_ACCEPT, createBookFromText, importFile } from '../lib/importer';
@@ -128,19 +129,21 @@ function FilesTab({ mobile }: { mobile: boolean }) {
       const { id, file } = queue.current.shift()!;
       active.current++;
       let lastPaint = 0;
+      Promise.resolve()
+        .then(() =>
       importFile(file, ({ percent, detail }) => {
         const now = performance.now();
         if (now - lastPaint < 60 && percent < 99) return; // throttle re-renders
         lastPaint = now;
         patchRow(id, { percent, detail });
-      })
-        .then((book) => patchRow(id, { status: 'ready', percent: 100, book }))
-        .catch((e: unknown) =>
-          patchRow(id, {
-            status: 'error',
-            error: e instanceof Error && e.message ? e.message : 'This file couldn’t be read',
-          }),
+      }),
         )
+        .then((book) => patchRow(id, { status: 'ready', percent: 100, book }))
+        .catch((e: unknown) => {
+          const error = e instanceof Error && e.message ? e.message : 'This file couldn’t be read';
+          patchRow(id, { status: 'error', error });
+          if (e instanceof Error && e.name === 'StorageFullError') notify(error, 'error');
+        })
         .finally(() => {
           active.current--;
           pump();

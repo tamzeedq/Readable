@@ -430,3 +430,23 @@ kbd,
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
+/* Skip link: visible only when focused */
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+  transform: translateY(-200%);
+}
+.skip-link:focus {
+  transform: none;
+}
+#main-content:focus {
+  outline: none;
+}

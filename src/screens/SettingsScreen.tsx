@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useAppStore } from '../store/appStore';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useIsMobile } from '../hooks/useMediaQuery';
 import {
@@ -10,6 +11,8 @@ import {
   ShortcutsSection,
   type SectionId,
 } from './settings/sections';
+import { AccountSection } from './settings/AccountSection';
+import { BackupSection } from './settings/BackupSection';
 import './settings/Settings.css';
 
 function SectionBody({ id, mobile }: { id: SectionId; mobile?: boolean }) {
@@ -20,6 +23,10 @@ function SectionBody({ id, mobile }: { id: SectionId; mobile?: boolean }) {
       return <AppearanceSection mobile={mobile} />;
     case 'library':
       return <LibrarySection mobile={mobile} />;
+    case 'account':
+      return <AccountSection mobile={mobile} />;
+    case 'backup':
+      return <BackupSection mobile={mobile} />;
     case 'shortcuts':
       return <ShortcutsSection />;
     case 'about':
@@ -28,7 +35,7 @@ function SectionBody({ id, mobile }: { id: SectionId; mobile?: boolean }) {
 }
 
 function DesktopSettings() {
-  const [section, setSection] = useState<SectionId>('reading');
+  const [section, setSection] = useState<SectionId>(() => takeTarget() ?? 'reading');
   return (
     <div className="screen set-screen">
       <div className="set-side">
@@ -53,15 +60,24 @@ function DesktopSettings() {
   );
 }
 
-const MORE_ROWS: { id: SectionId | 'account'; label: string; meta?: string }[] = [
+/** One-shot deep link (e.g. from the sidebar's Account entry) to a settings section */
+function takeTarget(): SectionId | null {
+  const t = useAppStore.getState().settingsTarget;
+  if (!t) return null;
+  useAppStore.setState({ settingsTarget: null });
+  return t as SectionId;
+}
+
+const MORE_ROWS: { id: SectionId; label: string; meta?: string }[] = [
   { id: 'appearance', label: 'Appearance' },
   { id: 'library', label: 'Library & files' },
-  { id: 'account', label: 'Account & sync', meta: 'Soon' },
+  { id: 'account', label: 'Account' },
+  { id: 'backup', label: 'Backup & restore' },
   { id: 'about', label: 'About' },
 ];
 
 function MobileSettings() {
-  const [sub, setSub] = useState<SectionId | null>(null);
+  const [sub, setSub] = useState<SectionId | null>(() => takeTarget());
 
   if (sub) {
     const label = SECTIONS.find((s) => s.id === sub)?.label ?? '';
@@ -90,22 +106,15 @@ function MobileSettings() {
       </div>
       <div className="set-m-group more">More</div>
       <div className="set-m-card">
-        {MORE_ROWS.map((r) =>
-          r.id === 'account' ? (
-            <div key={r.id} className="set-m-more disabled" aria-disabled="true">
-              <span>{r.label}</span>
-              <span className="set-m-more-meta">{r.meta}</span>
-            </div>
-          ) : (
-            <button key={r.id} type="button" className="set-m-more" onClick={() => setSub(r.id as SectionId)}>
+        {MORE_ROWS.map((r) => (
+            <button key={r.id} type="button" className="set-m-more" onClick={() => setSub(r.id)}>
               <span>{r.label}</span>
               <span className="set-m-more-meta">
                 {r.meta}
                 <ChevronRight size={15} strokeWidth={1.6} aria-hidden="true" />
               </span>
             </button>
-          ),
-        )}
+        ))}
       </div>
     </div>
   );

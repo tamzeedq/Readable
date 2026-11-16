@@ -217,3 +217,24 @@
 .tabbar button[aria-current='page'] {
   color: var(--accent-text);
 }
+
+.sidebar-account {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid var(--line);
+  background: transparent;
+  font-family: var(--ui);
+  text-align: left;
+  cursor: pointer;
+}
+.sidebar-account:hover { color: var(--ink); background: var(--chip); }
+.sidebar-account:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+.sidebar-account > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.sync-state { display: inline-flex; align-items: center; flex: none; }
+.sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); opacity: 0.6; }
+.sync-state[data-state='synced'] .sync-dot { background: var(--accent); opacity: 1; }
+.sync-state[data-state='syncing'] .sync-dot { animation: sync-pulse 1.2s ease-in-out infinite; }
+.sync-state[data-state='error'] .sync-dot { background: var(--focal); opacity: 1; outline: 2px solid var(--mark); }
+@keyframes sync-pulse { 50% { opacity: 0.25; } }
+@media (prefers-reduced-motion: reduce) { .sync-state[data-state='syncing'] .sync-dot { animation: none; } }

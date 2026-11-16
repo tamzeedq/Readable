@@ -301,7 +301,7 @@ export function SearchOverlay() {
         )}
     </>
   ) : (
-    <p className="so-empty">No books or actions match “{query.trim()}”</p>
+    <p className="so-empty">No books or actions match “{query.trim()}”. Check the spelling, or try an author or a word from the title.</p>
   );
 
   const input = (

@@ -14,13 +14,15 @@ interface CoverProps {
   variant?: 'tile' | 'hero';
   className?: string;
   style?: CSSProperties;
+  /** Hide from assistive tech when the surrounding control already shows the title */
+  decorative?: boolean;
 }
 
 /**
  * Book cover: stored cover image if present, otherwise the generated typographic cover
  * (solid oklch(L 0.07 hue), inset border, title + uppercase author, spine shading).
  */
-export function Cover({ book, width, titleSize, authorSize, variant = 'tile', className, style }: CoverProps) {
+export function Cover({ book, width, titleSize, authorSize, variant = 'tile', className, style, decorative }: CoverProps) {
   const url = useCoverUrl(book.id, book.hasCover);
   const w = width ?? 120;
   const tSize = titleSize ?? Math.max(9, Math.round(w * 0.125));
@@ -40,8 +42,7 @@ export function Cover({ book, width, titleSize, authorSize, variant = 'tile', cl
         background: url ? 'var(--chip)' : `oklch(var(--cover-l) 0.07 ${book.coverHue})`,
         ...style,
       }}
-      role="img"
-      aria-label={`${book.title} cover`}
+      {...(decorative ? { 'aria-hidden': true } : { role: 'img', 'aria-label': `${book.title} cover` })}
     >
       {url ? (
         <img src={url} alt="" draggable={false} />

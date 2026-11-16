@@ -197,7 +197,6 @@ function Contents({ book, wpm, mobile }: { book: Book; wpm: number; mobile: bool
   useEffect(() => {
     currentRef.current?.scrollIntoView({ block: 'center' });
     // Only on open
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (book.chapters.length < 2) return null;

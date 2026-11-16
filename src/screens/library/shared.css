@@ -339,3 +339,9 @@
 .bk-empty .btn {
   margin-top: 10px;
 }
+
+.bk-welcome-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+}

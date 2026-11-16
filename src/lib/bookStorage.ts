@@ -4,11 +4,44 @@ import { createStore, get, set, del } from 'idb-keyval';
 import { useEffect, useState } from 'react';
 import type { BookContent } from '../types';
 
+/** Thrown when the browser refuses a write because storage is full. */
+export class StorageFullError extends Error {
+  constructor(message = 'Your device is out of storage space for Readable. Remove a book or free up space and try again.') {
+    super(message);
+    this.name = 'StorageFullError';
+  }
+}
+
+export function isQuotaError(e: unknown): boolean {
+  const err = e as { name?: string; code?: number } | null;
+  return !!err && (err.name === 'QuotaExceededError' || err.name === 'NS_ERROR_DOM_QUOTA_REACHED' || err.code === 22 || err.code === 1014);
+}
+
+async function guardedSet(key: string, value: unknown, store: ReturnType<typeof createStore>): Promise<void> {
+  try {
+    await set(key, value, store);
+  } catch (e) {
+    if (isQuotaError(e)) throw new StorageFullError();
+    console.error('Storage write failed', e);
+    // eslint-disable-next-line preserve-caught-error -- cause is already logged above
+    throw new Error('Couldn’t save to this device’s storage. Private browsing can cause this.');
+  }
+}
+
+/** Ask the browser not to evict our data. Safe to call repeatedly; never throws. */
+export async function requestPersistentStorage(): Promise<void> {
+  try {
+    if (navigator.storage?.persist && !(await navigator.storage.persisted?.())) await navigator.storage.persist();
+  } catch {
+    /* best effort */
+  }
+}
+
 const contentStore = createStore('readable-content', 'books');
 const coverStore = createStore('readable-covers', 'covers');
 
 export async function saveBookContent(content: BookContent): Promise<void> {
-  await set(content.bookId, content, contentStore);
+  await guardedSet(content.bookId, content, contentStore);
 }
 
 export async function loadBookContent(bookId: string): Promise<BookContent | undefined> {
@@ -16,7 +49,7 @@ export async function loadBookContent(bookId: string): Promise<BookContent | und
 }
 
 export async function saveCover(bookId: string, blob: Blob): Promise<void> {
-  await set(bookId, blob, coverStore);
+  await guardedSet(bookId, blob, coverStore);
   coverListeners.forEach((fn) => fn(bookId));
 }
 

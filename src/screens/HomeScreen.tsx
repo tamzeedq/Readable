@@ -32,7 +32,7 @@ function useResumeSnippet(book: Book | undefined): string | null {
         if (!words.length) return;
         const text = words
           .join(' ')
-          .replace(/^[\s"'“‘(\[—–-]+/, '')
+          .replace(/^[\s"'“‘([—–-]+/, '')
           .replace(/[\s.,;:!?"'”’)\]—–-]+$/, '');
         if (text) setSnippet(text);
       })
@@ -193,7 +193,7 @@ function RecentTile({ book, mobile }: { book: Book; mobile: boolean }) {
       className="home-tile"
       role="button"
       tabIndex={0}
-      aria-label={`${bookStatus(book) === 'unread' ? 'Start' : 'Resume'} ${book.title}`}
+      title={`${bookStatus(book) === 'unread' ? 'Start' : 'Resume'} ${book.title}`}
       onClick={open}
       onKeyDown={(e) => {
         if (e.target !== e.currentTarget) return;
@@ -203,7 +203,8 @@ function RecentTile({ book, mobile }: { book: Book; mobile: boolean }) {
         }
       }}
     >
-      <Cover book={book} titleSize={mobile ? 14 : 15} authorSize={mobile ? 7 : 8} />
+      {/* Accessible name comes from the visible title + status (WCAG 2.5.3); the cover repeats the title */}
+      <Cover book={book} titleSize={mobile ? 14 : 15} authorSize={mobile ? 7 : 8} decorative />
       <div className="home-tile-text">
         <div className="home-tile-title">{book.title}</div>
         <div className="home-tile-status">

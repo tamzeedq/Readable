@@ -14,6 +14,8 @@ import {
 } from 'lucide-react';
 import { useMemo } from 'react';
 import { bookStatus, isRecentlyAdded, useAppStore, useLibraryBooks } from '../../store/appStore';
+import { useAuth } from '../../lib/auth';
+import { useSyncStatus } from '../../lib/sync/app';
 import type { Screen } from '../../types';
 import './Sidebar.css';
 
@@ -27,6 +29,8 @@ export const NAV_ITEMS: { screen: Screen; label: string; Icon: typeof House }[] 
 
 export const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform);
 export const MOD_KEY_LABEL = isMac ? '⌘K' : 'Ctrl K';
+/** aria-keyshortcuts value for the search shortcut */
+export const MOD_KEY_ARIA = isMac ? 'Meta+K' : 'Control+K';
 
 export function Sidebar({ onNewShelf }: { onNewShelf: () => void }) {
   const screen = useAppStore((s) => s.screen);
@@ -38,6 +42,10 @@ export function Sidebar({ onNewShelf }: { onNewShelf: () => void }) {
   const collapsed = useAppStore((s) => s.sidebarCollapsed);
   const setCollapsed = useAppStore((s) => s.setSidebarCollapsed);
   const books = useLibraryBooks();
+  const auth = useAuth();
+  const sync = useSyncStatus((x) => x.state);
+  const syncLabel = { idle: '', syncing: 'Syncing', synced: 'Synced', offline: 'Offline', error: 'Sync problem' }[sync];
+  const accountLabel = auth.status === 'signed-in' && auth.user?.email ? auth.user.email : auth.status === 'unavailable' ? 'Account' : 'Sign in';
 
   const counts = useMemo(() => {
     const byShelf: Record<string, number> = {};
@@ -93,10 +101,16 @@ export function Sidebar({ onNewShelf }: { onNewShelf: () => void }) {
         </button>
       </div>
 
-      <button className="sidebar-search" aria-label="Search books and actions" onClick={() => openOverlay('search')}>
+      {/* Name comes from the visible "Search" text (WCAG 2.5.3 label-in-name); the shortcut is exposed via aria-keyshortcuts */}
+      <button
+        className="sidebar-search"
+        title="Search books and actions"
+        aria-keyshortcuts={MOD_KEY_ARIA}
+        onClick={() => openOverlay('search')}
+      >
         <Search size={17} strokeWidth={1.6} aria-hidden="true" />
         <span>Search</span>
-        <kbd>{MOD_KEY_LABEL}</kbd>
+        <kbd aria-hidden="true">{MOD_KEY_LABEL}</kbd>
       </button>
 
       <nav aria-label="Main" className="sidebar-nav">
@@ -172,11 +186,23 @@ export function Sidebar({ onNewShelf }: { onNewShelf: () => void }) {
         </section>
       </div>
 
-      <div className="sidebar-footer" title="Account and sync are coming in a later version">
+      <button
+        type="button"
+        className="sidebar-footer sidebar-account"
+        onClick={() => {
+          useAppStore.setState({ settingsTarget: 'account' });
+          navigate('settings');
+        }}
+      >
         <User size={18} strokeWidth={1.6} aria-hidden="true" />
-        <span>Account &amp; sync</span>
-        <span className="soon">Soon</span>
-      </div>
+        <span>{accountLabel}</span>
+        {auth.status === 'signed-in' && syncLabel && (
+          <span className="sync-state" data-state={sync} title={syncLabel}>
+            <span className="sync-dot" aria-hidden="true" />
+            <span className="sr-only">{syncLabel}</span>
+          </span>
+        )}
+      </button>
     </aside>
   );
 }
