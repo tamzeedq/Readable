@@ -122,10 +122,13 @@ function AppShell() {
 
   return (
     <div className={`app ${isMobile ? 'is-mobile' : 'is-desktop'}`}>
+      <a className="skip-link" href="#main-content" onClick={(e) => { e.preventDefault(); document.getElementById('main-content')?.focus(); }}>
+        Skip to content
+      </a>
       {!isReader && !isMobile && <Sidebar onNewShelf={() => setNewShelfOpen(true)} />}
 
       <div className="app-main">
-        <main className="app-content" data-screen={screen}>
+        <main className="app-content" id="main-content" tabIndex={-1} data-screen={screen}>
           {screen === 'home' && <HomeScreen />}
           {screen === 'library' && <LibraryScreen />}
           {screen === 'collections' && <CollectionsScreen onNewShelf={() => setNewShelfOpen(true)} />}

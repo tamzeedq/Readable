@@ -1,4 +1,4 @@
-import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
 /**
@@ -22,16 +22,19 @@ function OverlayShell({
   style?: CSSProperties;
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
+  // Captured during the first render, before any child's autoFocus can move focus into the panel
+  const [previouslyFocused] = useState(() => document.activeElement as HTMLElement | null);
 
   useEffect(() => {
-    const previouslyFocused = document.activeElement as HTMLElement | null;
     const panel = panelRef.current;
-    const first = panel?.querySelector<HTMLElement>(
-      '[autofocus], input, textarea, button, [href], select, [tabindex]:not([tabindex="-1"])',
-    );
-    (first ?? panel)?.focus();
+    if (!panel?.contains(document.activeElement)) {
+      const first = panel?.querySelector<HTMLElement>(
+        '[autofocus], input, textarea, button, [href], select, [tabindex]:not([tabindex="-1"])',
+      );
+      (first ?? panel)?.focus();
+    }
     return () => previouslyFocused?.focus?.();
-  }, []);
+  }, [previouslyFocused]);
 
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
