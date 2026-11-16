@@ -224,3 +224,61 @@ describe('signed out / no Supabase', () => {
     vi.unstubAllEnvs();
   });
 });
+
+describe('cloud-file delete retry', () => {
+  it('retries a failed delete on the next sync and clears it on success', async () => {
+    const cloud = makeCloud();
+    const A = makeDevice(cloud);
+    const queued: { id: string; path: string }[] = [];
+    let fail = true;
+    const attempts: string[] = [];
+    const realRemove = cloud.files.remove;
+    const items = { current: queued };
+    const runner = createSyncRunner({
+      store: { get: () => A.state, apply: (p) => void Object.assign(A.state, p) },
+      userId: () => USER,
+      syncOnce: cloud.syncOnce,
+      files: { ...cloud.files, remove: async (path: string) => { attempts.push(path); if (fail) throw new Error('boom'); return realRemove(path); } },
+      content: { load: async (id) => A.contents.get(id), loadCover: async () => undefined, save: async () => undefined, saveCover: async () => undefined, remove: async () => undefined },
+      deleteQueue: { load: () => items.current, save: (i) => void (items.current = i) },
+      online: () => true,
+      backoffMs: 1,
+    });
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    A.addBook(makeBook(BOOK_ID, { wordCount: 3 }), content(BOOK_ID));
+    await runner.start();
+    expect(cloud.storage.size).toBe(1);
+
+    A.edit(() => (A.state.books = []));
+    await runner.syncNow();
+    expect(attempts).toHaveLength(1);
+    expect(items.current).toEqual([{ id: BOOK_ID, path: `${USER}/${BOOK_ID}` }]);
+    expect(cloud.storage.size).toBe(1);
+
+    fail = false;
+    await runner.syncNow();
+    expect(attempts).toHaveLength(2);
+    expect(items.current).toEqual([]);
+    expect(cloud.storage.size).toBe(0);
+  });
+
+  it('keeps syncing metadata when an upload hits the storage quota', async () => {
+    const cloud = makeCloud();
+    const A = makeDevice(cloud);
+    const status = createStatusStore();
+    const runner = createSyncRunner({
+      store: { get: () => A.state, apply: (p) => void Object.assign(A.state, p) },
+      userId: () => USER,
+      syncOnce: cloud.syncOnce,
+      files: { ...cloud.files, upload: async () => { throw new Error('Storage quota exceeded (limit 1000 bytes)'); } },
+      content: { load: async (id) => A.contents.get(id), loadCover: async () => undefined, save: async () => undefined, saveCover: async () => undefined, remove: async () => undefined },
+      status,
+      online: () => true,
+      backoffMs: 1,
+    });
+    A.addBook(makeBook(BOOK_ID, { wordCount: 3 }), content(BOOK_ID));
+    await runner.start();
+    expect(status.getState()).toMatchObject({ state: 'synced', quotaExceeded: true });
+  });
+});

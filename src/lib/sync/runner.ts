@@ -12,7 +12,17 @@ export interface SyncStatus {
   state: SyncState;
   lastSyncedAt: number | null;
   message: string | null;
+  /** The last file upload was refused because the account is over its storage limit */
+  quotaExceeded?: boolean;
 }
+
+/** Cloud-file deletes that failed and must be retried on a later sync (persisted by the caller). */
+export interface DeleteQueue {
+  load(): { id: string; path: string }[];
+  save(items: { id: string; path: string }[]): void;
+}
+
+export const isQuotaError = (e: unknown) => /quota/i.test(String((e as { message?: string })?.message ?? e));
 
 export type StatusStore = UseBoundStore<StoreApi<SyncStatus>>;
 export const createStatusStore = (): StatusStore =>
@@ -47,6 +57,7 @@ export interface RunnerDeps {
     remove(id: string): Promise<void>;
   };
   status?: StatusStore;
+  deleteQueue?: DeleteQueue;
   online?: () => boolean;
   now?: () => number;
   /** Backoff base in ms (tests use a small value) */
@@ -88,6 +99,9 @@ export function createSyncRunner(deps: RunnerDeps) {
   let active = false;
   let timer: ReturnType<typeof setTimeout> | null = null;
   let failures = 0;
+  let quotaHit = false;
+  let memQueue: { id: string; path: string }[] = [];
+  const queue: DeleteQueue = deps.deleteQueue ?? { load: () => memQueue, save: (i) => void (memQueue = i) };
 
   const set = (patch: Partial<SyncStatus>) => status.setState(patch);
 
@@ -99,6 +113,7 @@ export function createSyncRunner(deps: RunnerDeps) {
 
   async function filePhase(synced: LocalSnapshot): Promise<number> {
     let failed = 0;
+    quotaHit = false;
     const pushedIds = new Set(synced.books.map((b) => b.id));
     for (const book of deps.store.get().books as Book[]) {
       if (book.transient || !pushedIds.has(book.id)) continue;
@@ -117,6 +132,10 @@ export function createSyncRunner(deps: RunnerDeps) {
           if (cover) await deps.content.saveCover(book.id, cover);
         }
       } catch (e) {
+        if (isQuotaError(e)) {
+          quotaHit = true; // metadata keeps syncing; only the file is held back
+          continue;
+        }
         console.error('Sync file step failed', book.id, e);
         failed++;
       }
@@ -140,9 +159,18 @@ export function createSyncRunner(deps: RunnerDeps) {
         return path ? [{ id, path }] : [];
       });
     const result = await deps.syncOnce(start, start.syncCursor);
-    for (const { id, path } of deletedFiles) {
-      await deps.files.remove(path, id).catch((e) => console.error('Could not remove cloud file', id, e));
+    // Retry earlier failures too; whatever still fails stays queued for the next sync
+    const toDelete = [...queue.load(), ...deletedFiles].filter((d, i, a) => a.findIndex((x) => x.path === d.path && x.id === d.id) === i);
+    const stillFailing: { id: string; path: string }[] = [];
+    for (const d of toDelete) {
+      try {
+        await deps.files.remove(d.path, d.id);
+      } catch (e) {
+        console.error('Could not remove cloud file', d.id, e);
+        stillFailing.push(d);
+      }
     }
+    if (stillFailing.length || queue.load().length) queue.save(stillFailing);
 
     const before = new Set(deps.store.get().books.map((b) => b.id));
     const merged = mergeAfterSync(deps.store.get(), start.stamps, result.snapshot, userId);
@@ -178,7 +206,11 @@ export function createSyncRunner(deps: RunnerDeps) {
     try {
       await runOnce();
       failures = 0;
-      set({ state: 'synced', lastSyncedAt: now(), message: null });
+      set(
+        quotaHit
+          ? { state: 'synced', lastSyncedAt: now(), message: 'Your cloud storage is full — some books aren’t uploaded yet', quotaExceeded: true }
+          : { state: 'synced', lastSyncedAt: now(), message: null, quotaExceeded: false },
+      );
     } catch (e) {
       failures++;
       const offline = isNetworkError(e) || !online();
